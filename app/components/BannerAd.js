@@ -21,9 +21,9 @@ export default function BannerAd() {
 
   return (
     <div className="h-full flex flex-col items-center justify-center">
-      <div className="text-red-600 text-center">
+      <div className="text-[var(--color-text)] text-center">
         <p className="font-bold mb-2">{ads[currentAd].title}</p>
-        <div className="border-2 border-red-600 p-2">
+        <div className="border-2 border-[var(--color-primary)] p-2">
           [Ad Image {currentAd + 1}]
         </div>
       </div>

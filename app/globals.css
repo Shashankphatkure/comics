@@ -3,139 +3,124 @@
 @tailwind utilities;
 
 :root {
-  /* Dark theme color palette */
-  --color-primary: #ff6b6b; /* Light red */
-  --color-secondary: #1a1a1a; /* Dark gray */
-  --color-accent: #845ef7; /* Purple */
-  --color-accent2: #20c997; /* Mint */
-  --color-background: #121212; /* Very dark gray */
-  --color-paper: #1e1e1e; /* Dark paper */
-  --color-text: #e0e0e0; /* Light text */
-  --color-text-secondary: #a0a0a0; /* Secondary text */
+  /* Updated color palette to match Gumroad's retro style */
+  --color-primary: #ff0000; /* Pure red */
+  --color-secondary: #000000; /* Pure black */
+  --color-accent: #ff3333; /* Slightly lighter red for hover */
+  --color-background: #000000; /* Pure black background */
+  --color-paper: #111111; /* Very dark gray for cards */
+  --color-text: #ffffff; /* Pure white text */
+  --color-text-secondary: #cccccc; /* Light gray for secondary text */
 }
 
 body {
   background-color: var(--color-background);
   background-image: linear-gradient(
-      45deg,
-      rgba(255, 107, 107, 0.05) 25%,
-      transparent 25%
+      to right,
+      rgba(255, 0, 0, 0.1) 1px,
+      transparent 1px
     ),
-    linear-gradient(-45deg, rgba(255, 107, 107, 0.05) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, rgba(255, 107, 107, 0.05) 75%),
-    linear-gradient(-45deg, transparent 75%, rgba(255, 107, 107, 0.05) 75%);
-  background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    linear-gradient(to bottom, rgba(255, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 24px 24px;
   color: var(--color-text);
 }
 
-/* Enhanced retro card styling for dark theme */
+/* Gumroad-style card styling */
 .retro-card {
   background: var(--color-paper);
-  border: 3px solid var(--color-primary);
-  box-shadow: 6px 6px 0 rgba(255, 107, 107, 0.3);
+  border: 2px solid var(--color-primary);
+  box-shadow: 4px 4px 0 var(--color-primary);
   transition: all 0.2s ease;
   position: relative;
-  overflow: hidden;
-}
-
-.retro-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(
-    90deg,
-    var(--color-primary) 0%,
-    var(--color-accent) 50%,
-    var(--color-accent2) 100%
-  );
 }
 
 .retro-card:hover {
-  transform: translate(-3px, -3px);
-  box-shadow: 9px 9px 0 rgba(255, 107, 107, 0.4);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--color-primary);
 }
 
-/* Updated button styling for dark theme */
+/* Gumroad-style button */
 .retro-button {
-  background: var(--color-primary);
-  border: 3px solid var(--color-text);
+  background: var(--color-background);
+  border: 2px solid var(--color-primary);
   color: var(--color-text);
   font-weight: bold;
   text-transform: uppercase;
   padding: 0.5rem 1rem;
-  box-shadow: 4px 4px 0 rgba(255, 107, 107, 0.3);
+  box-shadow: 3px 3px 0 var(--color-primary);
   transition: all 0.2s ease;
   position: relative;
-  overflow: hidden;
-}
-
-.retro-button::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 100%
-  );
-  transition: left 0.5s ease;
-}
-
-.retro-button:hover:not(:disabled)::after {
-  left: 100%;
 }
 
 .retro-button:hover:not(:disabled) {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 rgba(255, 107, 107, 0.4);
+  box-shadow: 5px 5px 0 var(--color-primary);
   background: var(--color-primary);
+  color: var(--color-text);
 }
 
-/* Updated title styling for dark theme */
+.retro-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Gumroad-style title */
 .retro-title {
   color: var(--color-primary);
-  text-shadow: 3px 3px 0 rgba(255, 107, 107, 0.3),
-    -1px -1px 0 var(--color-accent);
-  letter-spacing: 2px;
   text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: bold;
 }
 
-/* Comic panel effect for dark theme */
+/* Comic panel effect */
 .comic-panel {
   background: var(--color-paper);
-  border: 3px solid var(--color-primary);
-  box-shadow: inset 0 0 30px rgba(255, 107, 107, 0.1),
-    5px 5px 0 rgba(255, 107, 107, 0.3);
+  border: 2px solid var(--color-primary);
+  box-shadow: 4px 4px 0 var(--color-primary);
 }
 
-/* Retro select styling for dark theme */
+/* Select styling */
 .retro-select {
-  background: var(--color-paper);
+  background: var(--color-background);
   border: 2px solid var(--color-primary);
-  padding: 0.5rem;
-  font-weight: bold;
-  box-shadow: 3px 3px 0 rgba(255, 107, 107, 0.3);
   color: var(--color-text);
+  padding: 0.5rem;
+  box-shadow: 3px 3px 0 var(--color-primary);
 }
 
 .retro-select select {
-  background: var(--color-paper);
+  background: var(--color-background);
   color: var(--color-text);
+  border: none;
+  outline: none;
 }
 
-/* Dark theme specific styles */
-.dark-text {
+/* Link hover effects */
+.retro-link {
   color: var(--color-text);
+  transition: color 0.2s ease;
 }
 
-.dark-text-secondary {
-  color: var(--color-text-secondary);
+.retro-link:hover {
+  color: var(--color-primary);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border: 2px solid var(--color-background);
+}
+
+/* Text highlight */
+::selection {
+  background: var(--color-primary);
+  color: var(--color-text);
 }

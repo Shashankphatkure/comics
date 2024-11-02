@@ -12,20 +12,22 @@ export default function Other() {
             <div className="retro-card overflow-hidden group">
               <div className="relative h-48 bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-primary)]">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-white">
+                  <span className="text-2xl font-bold text-[var(--color-text)]">
                     Coming Soon!
                   </span>
                 </div>
               </div>
               <div className="p-6">
-                <h3 className="text-2xl font-bold mb-2 text-[var(--color-secondary)]">
+                <h3 className="text-2xl font-bold mb-2 text-[var(--color-text)]">
                   Merchandise
                 </h3>
-                <p className="text-gray-600 mb-4">
+                <p className="text-[var(--color-text)] mb-4">
                   Exclusive t-shirts, prints, and collectibles featuring your
                   favorite characters and moments from Social Smokers.
                 </p>
-                <button className="retro-button">Shop Now</button>
+                <button className="retro-button text-[var(--color-text)]">
+                  Shop Now
+                </button>
               </div>
             </div>
 

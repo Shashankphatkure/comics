@@ -2,6 +2,7 @@ import { comics } from "./data/comics";
 import BannerAd from "./components/BannerAd";
 import Image from "next/image";
 import Link from "next/link";
+import FeaturedPanel from "./components/FeaturedPanel";
 
 export default function Home() {
   return (
@@ -11,7 +12,7 @@ export default function Home() {
         <div className="flex flex-col md:flex-row items-center gap-8">
           <div className="flex-1">
             <h1 className="retro-title text-6xl mb-6">Social Smokers</h1>
-            <p className="text-xl mb-6 text-[var(--color-secondary)]">
+            <p className="text-xl mb-6 text-[var(--color-text)]">
               A retro-styled webcomic exploring modern society through a unique
               lens
             </p>
@@ -20,14 +21,7 @@ export default function Home() {
             </Link>
           </div>
           <div className="w-full md:w-1/2 aspect-video relative">
-            <div className="comic-panel h-full">
-              {/* Featured comic panel or artwork */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl font-bold text-[var(--color-secondary)]">
-                  Featured Panel
-                </span>
-              </div>
-            </div>
+            <FeaturedPanel />
           </div>
         </div>
       </div>
@@ -50,7 +44,7 @@ export default function Home() {
                         fill
                         className="object-cover transition-transform group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50" />
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80" />
                       <div className="absolute bottom-0 left-0 right-0 p-4">
                         <h3 className="text-white font-bold text-xl mb-1">
                           {issue.title}
@@ -72,15 +66,15 @@ export default function Home() {
               <h3 className="text-[var(--color-primary)] font-bold text-xl mb-4">
                 Weekly Updates
               </h3>
-              <p className="text-[var(--color-secondary)]">
+              <p className="text-[var(--color-text)]">
                 New episodes every Monday! Follow our story as it unfolds.
               </p>
             </div>
             <div className="retro-card p-6">
-              <h3 className="text-[var(--color-accent)] font-bold text-xl mb-4">
+              <h3 className="text-[var(--color-primary)] font-bold text-xl mb-4">
                 Community
               </h3>
-              <p className="text-[var(--color-secondary)]">
+              <p className="text-[var(--color-text)]">
                 Join our growing community of readers and creators.
               </p>
             </div>
@@ -101,17 +95,20 @@ export default function Home() {
               <div className="space-y-3">
                 <Link
                   href="/about"
-                  className="block retro-button w-full text-center"
+                  className="block retro-button w-full text-center text-[var(--color-text)]"
                 >
                   About Us
                 </Link>
                 <Link
                   href="/other"
-                  className="block retro-button w-full text-center"
+                  className="block retro-button w-full text-center text-[var(--color-text)]"
                 >
                   Extras
                 </Link>
-                <a href="#" className="block retro-button w-full text-center">
+                <a
+                  href="#"
+                  className="block retro-button w-full text-center text-[var(--color-text)]"
+                >
                   Discord
                 </a>
               </div>
@@ -121,7 +118,7 @@ export default function Home() {
             <div className="retro-card p-6">
               <h3 className="retro-title text-xl mb-4">Your Progress</h3>
               <div className="space-y-2">
-                <p className="text-sm text-[var(--color-secondary)]">
+                <p className="text-sm text-[var(--color-text)]">
                   Continue reading from where you left off
                 </p>
                 <button className="retro-button w-full">Resume Reading</button>

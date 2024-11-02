@@ -20,32 +20,30 @@ export const metadata = {
 
 function Header() {
   return (
-    <header className="border-2 border-[var(--color-primary)] p-4 flex justify-between items-center bg-[var(--color-paper)]">
-      <div className="border-2 border-[var(--color-primary)] p-2">
-        <Link href="/" className="hover:opacity-80 transition-opacity">
-          <h1 className="text-[var(--color-primary)] text-2xl font-bold">
+    <header className="border-2 border-[var(--color-primary)] p-4 flex justify-between items-center bg-[var(--color-background)] sticky top-0 z-50">
+      <div className="border-2 border-[var(--color-primary)] p-2 hover:bg-[var(--color-primary)] transition-colors group">
+        <Link href="/" className="block">
+          <h1 className="text-[var(--color-primary)] text-2xl font-bold group-hover:text-[var(--color-text)]">
             SOCIAL SMOKERS
           </h1>
         </Link>
       </div>
-      <nav className="text-[var(--color-text)]">
+      <nav className="flex items-center gap-6">
         <Link
           href="/"
-          className="hover:text-[var(--color-primary)] transition-colors"
+          className="text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors uppercase"
         >
           HOME
         </Link>
-        <span className="mx-2 text-[var(--color-primary)]">|</span>
         <Link
           href="/about"
-          className="hover:text-[var(--color-primary)] transition-colors"
+          className="text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors uppercase"
         >
           ABOUT
         </Link>
-        <span className="mx-2 text-[var(--color-primary)]">|</span>
         <Link
           href="/other"
-          className="hover:text-[var(--color-primary)] transition-colors"
+          className="text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors uppercase"
         >
           OTHER
         </Link>
