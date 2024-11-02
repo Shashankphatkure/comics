@@ -16,11 +16,7 @@ export const comics = {
   },
   2: {
     title: "The First Smoke",
-    pages: [
-      "https://i.imgur.com/4YqXxG4.png",
-      "https://i.imgur.com/5YqXxG4.png",
-      "https://i.imgur.com/6YqXxG4.png",
-    ],
+    pages: ["/comicdisplay.jpg", "/comicdisplay2.jpg", "/comicdisplay.jpg"],
     thumbnail: "/comicdisplay.jpg",
     description:
       "A chance encounter leads to unexpected friendships and revelations.",
