@@ -2,11 +2,12 @@ export const comics = {
   1: {
     title: "Origins",
     pages: [
-      "/comics/issue1/page1.jpg",
-      "/comics/issue1/page2.jpg",
-      "/comics/issue1/page3.jpg",
+      "https://i.imgur.com/1YqXxG4.png",
+      "https://i.imgur.com/2YqXxG4.png",
+      "https://i.imgur.com/3YqXxG4.png",
     ],
-    thumbnail: "/comics/issue1/thumbnail.jpg",
+    thumbnail:
+      "https://images.unsplash.com/photo-1588497859490-85d1c17db96d?w=500&h=700",
     description:
       "Where it all began - meet our cast of characters in this groundbreaking first issue.",
     releaseDate: "2024-01-01",
@@ -16,11 +17,12 @@ export const comics = {
   2: {
     title: "The First Smoke",
     pages: [
-      "/comics/issue2/page1.jpg",
-      "/comics/issue2/page2.jpg",
-      "/comics/issue2/page3.jpg",
+      "https://i.imgur.com/4YqXxG4.png",
+      "https://i.imgur.com/5YqXxG4.png",
+      "https://i.imgur.com/6YqXxG4.png",
     ],
-    thumbnail: "/comics/issue2/thumbnail.jpg",
+    thumbnail:
+      "https://images.unsplash.com/photo-1618519764620-7403abdbdfe9?w=500&h=700",
     description:
       "A chance encounter leads to unexpected friendships and revelations.",
     releaseDate: "2024-01-15",
@@ -30,11 +32,12 @@ export const comics = {
   3: {
     title: "Smoke & Mirrors",
     pages: [
-      "/comics/issue3/page1.jpg",
-      "/comics/issue3/page2.jpg",
-      "/comics/issue3/page3.jpg",
+      "https://i.imgur.com/7YqXxG4.png",
+      "https://i.imgur.com/8YqXxG4.png",
+      "https://i.imgur.com/9YqXxG4.png",
     ],
-    thumbnail: "/comics/issue3/thumbnail.jpg",
+    thumbnail:
+      "https://images.unsplash.com/photo-1612036782180-6f0822045d23?w=500&h=700",
     description: "Nothing is as it seems in this twist-filled third issue.",
     releaseDate: "2024-02-01",
     tags: ["thriller", "mystery"],
@@ -43,11 +46,12 @@ export const comics = {
   4: {
     title: "Up in Smoke",
     pages: [
-      "/comics/issue4/page1.jpg",
-      "/comics/issue4/page2.jpg",
-      "/comics/issue4/page3.jpg",
+      "https://i.imgur.com/10YqXxG4.png",
+      "https://i.imgur.com/11YqXxG4.png",
+      "https://i.imgur.com/12YqXxG4.png",
     ],
-    thumbnail: "/comics/issue4/thumbnail.jpg",
+    thumbnail:
+      "https://images.unsplash.com/photo-1601850494422-3cf14624b0b3?w=500&h=700",
     description: "The plot thickens as secrets begin to unravel.",
     releaseDate: "2024-02-15",
     tags: ["drama", "action"],
@@ -56,11 +60,12 @@ export const comics = {
   5: {
     title: "Smoke Signals",
     pages: [
-      "/comics/issue5/page1.jpg",
-      "/comics/issue5/page2.jpg",
-      "/comics/issue5/page3.jpg",
+      "https://i.imgur.com/13YqXxG4.png",
+      "https://i.imgur.com/14YqXxG4.png",
+      "https://i.imgur.com/15YqXxG4.png",
     ],
-    thumbnail: "/comics/issue5/thumbnail.jpg",
+    thumbnail:
+      "https://images.unsplash.com/photo-1611416517780-eff3a13b0359?w=500&h=700",
     description: "A mysterious message sets our heroes on a new path.",
     releaseDate: "2024-03-01",
     tags: ["mystery", "adventure"],
@@ -69,11 +74,12 @@ export const comics = {
   6: {
     title: "Through the Smoke",
     pages: [
-      "/comics/issue6/page1.jpg",
-      "/comics/issue6/page2.jpg",
-      "/comics/issue6/page3.jpg",
+      "https://i.imgur.com/16YqXxG4.png",
+      "https://i.imgur.com/17YqXxG4.png",
+      "https://i.imgur.com/18YqXxG4.png",
     ],
-    thumbnail: "/comics/issue6/thumbnail.jpg",
+    thumbnail:
+      "https://images.unsplash.com/photo-1604076913837-52ab5629fba9?w=500&h=700",
     description: "The truth emerges in this explosive sixth issue.",
     releaseDate: "2024-03-15",
     tags: ["action", "drama"],
