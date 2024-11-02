@@ -8,6 +8,11 @@ export default function BannerAd() {
 
   const ads = [
     {
+      title: "Next Issue Coming Soon!",
+      image:
+        "https://images.unsplash.com/photo-1611416517780-eff3a13b0359?w=500&h=300",
+    },
+    {
       title: "Read Issue 1 Now!",
       image:
         "https://images.unsplash.com/photo-1618519764620-7403abdbdfe9?w=500&h=300",
