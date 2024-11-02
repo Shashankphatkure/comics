@@ -100,6 +100,12 @@ export default function Home() {
                   About Us
                 </Link>
                 <Link
+                  href="/dashboard"
+                  className="block retro-button w-full text-center text-[var(--color-text)]"
+                >
+                  Dashboard
+                </Link>
+                <Link
                   href="/other"
                   className="block retro-button w-full text-center text-[var(--color-text)]"
                 >
