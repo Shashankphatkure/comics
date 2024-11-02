@@ -13,7 +13,9 @@ export default function IssuePage({ params }) {
       <div className="container mx-auto px-4 py-8">
         <div className="retro-card p-8 text-center">
           <h2 className="retro-title text-2xl mb-4">Issue Not Found</h2>
-          <p className="mb-6">This issue doesn't exist yet!</p>
+          <p className="mb-6 text-[var(--color-text)]">
+            This issue doesn't exist yet!
+          </p>
           <Link href="/" className="retro-button">
             Return Home
           </Link>
@@ -33,21 +35,19 @@ export default function IssuePage({ params }) {
               {issue.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-3 py-1 bg-[var(--color-accent)] text-white rounded-full text-sm"
+                  className="px-3 py-1 bg-[var(--color-primary)] text-[var(--color-text)] rounded-full text-sm"
                 >
                   {tag}
                 </span>
               ))}
             </div>
-            <p className="text-[var(--color-secondary)] mb-4">
-              {issue.description}
-            </p>
+            <p className="text-[var(--color-text)] mb-4">{issue.description}</p>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-[var(--color-text-secondary)]">
                 Released: {new Date(issue.releaseDate).toLocaleDateString()}
               </span>
-              <span className="flex items-center gap-1">
-                <span className="text-[var(--color-accent)]">★</span>
+              <span className="flex items-center gap-1 text-[var(--color-text)]">
+                <span className="text-[var(--color-primary)]">★</span>
                 {issue.rating}
               </span>
             </div>
@@ -105,7 +105,9 @@ export default function IssuePage({ params }) {
                       <h4 className="font-bold text-[var(--color-primary)]">
                         {comic.title}
                       </h4>
-                      <p className="text-sm text-gray-600">Issue #{id}</p>
+                      <p className="text-sm text-[var(--color-text)]">
+                        Issue #{id}
+                      </p>
                     </Link>
                   ))}
               </div>
@@ -114,7 +116,7 @@ export default function IssuePage({ params }) {
             {/* Reading Stats */}
             <div className="retro-card p-6">
               <h3 className="retro-title text-xl mb-4">Reading Stats</h3>
-              <div className="space-y-2">
+              <div className="space-y-2 text-[var(--color-text)]">
                 <div className="flex justify-between">
                   <span>Time spent:</span>
                   <span>12 mins</span>

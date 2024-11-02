@@ -8,10 +8,10 @@ export default function About() {
           <div className="grid gap-8 max-w-4xl mx-auto">
             {/* About Comic Section */}
             <div className="retro-card p-8">
-              <h3 className="text-2xl font-bold mb-4 text-[var(--color-secondary)]">
+              <h3 className="text-2xl font-bold mb-4 text-[var(--color-text)]">
                 About Social Smokers
               </h3>
-              <div className="prose prose-lg">
+              <div className="text-[var(--color-text)]">
                 <p className="mb-4">
                   Social Smokers is a groundbreaking webcomic that explores the
                   intersections of society, culture, and human connections
@@ -28,20 +28,20 @@ export default function About() {
             </div>
 
             {/* Creator Section */}
-            <div className="retro-card p-8 bg-gradient-to-br from-[var(--color-paper)] to-white">
-              <h3 className="text-2xl font-bold mb-4 text-[var(--color-secondary)]">
+            <div className="retro-card p-8">
+              <h3 className="text-2xl font-bold mb-4 text-[var(--color-text)]">
                 Meet the Creator
               </h3>
               <div className="flex flex-col md:flex-row gap-8 items-center">
                 <div className="comic-panel w-48 h-48 shrink-0">
                   {/* Add creator image here */}
-                  <div className="w-full h-full flex items-center justify-center bg-[var(--color-accent)]">
-                    <span className="text-[var(--color-secondary)]">
+                  <div className="w-full h-full flex items-center justify-center bg-[var(--color-primary)]">
+                    <span className="text-[var(--color-text)]">
                       Creator Photo
                     </span>
                   </div>
                 </div>
-                <div className="prose prose-lg">
+                <div className="text-[var(--color-text)]">
                   <p className="mb-4">
                     Our creative team brings together years of experience in
                     storytelling, illustration, and digital artistry. With a
@@ -54,7 +54,7 @@ export default function About() {
 
             {/* Contact Section */}
             <div className="retro-card p-8">
-              <h3 className="text-2xl font-bold mb-4 text-[var(--color-secondary)]">
+              <h3 className="text-2xl font-bold mb-4 text-[var(--color-text)]">
                 Get in Touch
               </h3>
               <div className="grid md:grid-cols-2 gap-6">
@@ -65,7 +65,9 @@ export default function About() {
                   <h4 className="font-bold text-[var(--color-primary)]">
                     Email
                   </h4>
-                  <p>contact@socialsmokers.com</p>
+                  <p className="text-[var(--color-text)]">
+                    contact@socialsmokers.com
+                  </p>
                 </a>
                 <a
                   href="https://twitter.com/socialsmokers"
@@ -74,7 +76,7 @@ export default function About() {
                   <h4 className="font-bold text-[var(--color-primary)]">
                     Twitter
                   </h4>
-                  <p>@socialsmokers</p>
+                  <p className="text-[var(--color-text)]">@socialsmokers</p>
                 </a>
                 <a
                   href="https://instagram.com/socialsmokers"
@@ -83,7 +85,7 @@ export default function About() {
                   <h4 className="font-bold text-[var(--color-primary)]">
                     Instagram
                   </h4>
-                  <p>@socialsmokers</p>
+                  <p className="text-[var(--color-text)]">@socialsmokers</p>
                 </a>
                 <a
                   href="https://discord.gg/socialsmokers"
@@ -92,7 +94,7 @@ export default function About() {
                   <h4 className="font-bold text-[var(--color-primary)]">
                     Discord
                   </h4>
-                  <p>Join our community</p>
+                  <p className="text-[var(--color-text)]">Join our community</p>
                 </a>
               </div>
             </div>
@@ -103,7 +105,7 @@ export default function About() {
           <div className="sticky top-4 space-y-6">
             <div className="retro-card p-6">
               <h3 className="retro-title text-xl mb-4">Release Schedule</h3>
-              <div className="space-y-2">
+              <div className="space-y-2 text-[var(--color-text)]">
                 <p className="font-bold">New Issues:</p>
                 <p>Every First Monday</p>
                 <p className="font-bold">Updates:</p>

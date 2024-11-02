@@ -25,9 +25,7 @@ export default function Other() {
                   Exclusive t-shirts, prints, and collectibles featuring your
                   favorite characters and moments from Social Smokers.
                 </p>
-                <button className="retro-button text-[var(--color-text)]">
-                  Shop Now
-                </button>
+                <button className="retro-button">Shop Now</button>
               </div>
             </div>
 
@@ -35,16 +33,16 @@ export default function Other() {
             <div className="retro-card overflow-hidden group">
               <div className="relative h-48 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)]">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-white">
+                  <span className="text-2xl font-bold text-[var(--color-text)]">
                     Fan Gallery
                   </span>
                 </div>
               </div>
               <div className="p-6">
-                <h3 className="text-2xl font-bold mb-2 text-[var(--color-secondary)]">
+                <h3 className="text-2xl font-bold mb-2 text-[var(--color-text)]">
                   Fan Art
                 </h3>
-                <p className="text-gray-600 mb-4">
+                <p className="text-[var(--color-text)] mb-4">
                   Showcase your artistic talent! Submit your fan art and see it
                   featured in our community gallery.
                 </p>
@@ -54,7 +52,7 @@ export default function Other() {
 
             {/* Community Links */}
             <div className="retro-card p-6">
-              <h3 className="text-2xl font-bold mb-4 text-[var(--color-secondary)]">
+              <h3 className="text-2xl font-bold mb-4 text-[var(--color-text)]">
                 Community Links
               </h3>
               <div className="grid gap-4">
@@ -65,7 +63,7 @@ export default function Other() {
                   <h4 className="font-bold text-[var(--color-primary)]">
                     Official Wiki
                   </h4>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-[var(--color-text)]">
                     Explore the world of Social Smokers
                   </p>
                 </a>
@@ -76,7 +74,9 @@ export default function Other() {
                   <h4 className="font-bold text-[var(--color-primary)]">
                     Fan Forum
                   </h4>
-                  <p className="text-sm text-gray-600">Join the discussion</p>
+                  <p className="text-[var(--color-text)]">
+                    Join the discussion
+                  </p>
                 </a>
                 <a
                   href="#"
@@ -85,14 +85,16 @@ export default function Other() {
                   <h4 className="font-bold text-[var(--color-primary)]">
                     Discord Server
                   </h4>
-                  <p className="text-sm text-gray-600">Chat with fellow fans</p>
+                  <p className="text-[var(--color-text)]">
+                    Chat with fellow fans
+                  </p>
                 </a>
               </div>
             </div>
 
             {/* Updates & News */}
             <div className="retro-card p-6">
-              <h3 className="text-2xl font-bold mb-4 text-[var(--color-secondary)]">
+              <h3 className="text-2xl font-bold mb-4 text-[var(--color-text)]">
                 Latest Updates
               </h3>
               <div className="space-y-4">
@@ -100,8 +102,10 @@ export default function Other() {
                   <span className="text-sm text-[var(--color-primary)] font-bold">
                     March 15, 2024
                   </span>
-                  <h4 className="font-bold">New Merchandise Coming Soon!</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="font-bold text-[var(--color-text)]">
+                    New Merchandise Coming Soon!
+                  </h4>
+                  <p className="text-sm text-[var(--color-text-secondary)]">
                     Get ready for our spring collection...
                   </p>
                 </div>
@@ -109,8 +113,10 @@ export default function Other() {
                   <span className="text-sm text-[var(--color-primary)] font-bold">
                     March 1, 2024
                   </span>
-                  <h4 className="font-bold">Fan Art Contest Winners</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="font-bold text-[var(--color-text)]">
+                    Fan Art Contest Winners
+                  </h4>
+                  <p className="text-sm text-[var(--color-text-secondary)]">
                     Check out our February winners...
                   </p>
                 </div>
@@ -118,8 +124,12 @@ export default function Other() {
                   <span className="text-sm text-[var(--color-primary)] font-bold">
                     February 28, 2024
                   </span>
-                  <h4 className="font-bold">Issue #4 Announcement</h4>
-                  <p className="text-sm text-gray-600">Coming this April...</p>
+                  <h4 className="font-bold text-[var(--color-text)]">
+                    Issue #4 Announcement
+                  </h4>
+                  <p className="text-sm text-[var(--color-text-secondary)]">
+                    Coming this April...
+                  </p>
                 </div>
               </div>
             </div>
