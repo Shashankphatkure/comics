@@ -29,21 +29,8 @@ export const comics = {
     tags: ["mystery", "drama"],
     rating: 4.9,
   },
+
   3: {
-    title: "Smoke & Mirrors",
-    pages: [
-      "https://i.imgur.com/7YqXxG4.png",
-      "https://i.imgur.com/8YqXxG4.png",
-      "https://i.imgur.com/9YqXxG4.png",
-    ],
-    thumbnail:
-      "https://images.unsplash.com/photo-1612036782180-6f0822045d23?w=500&h=700",
-    description: "Nothing is as it seems in this twist-filled third issue.",
-    releaseDate: "2024-02-01",
-    tags: ["thriller", "mystery"],
-    rating: 4.7,
-  },
-  4: {
     title: "Up in Smoke",
     pages: [
       "https://i.imgur.com/10YqXxG4.png",
@@ -57,7 +44,7 @@ export const comics = {
     tags: ["drama", "action"],
     rating: 4.6,
   },
-  5: {
+  4: {
     title: "Smoke Signals",
     pages: [
       "https://i.imgur.com/13YqXxG4.png",
@@ -71,7 +58,7 @@ export const comics = {
     tags: ["mystery", "adventure"],
     rating: 4.9,
   },
-  6: {
+  5: {
     title: "Through the Smoke",
     pages: [
       "https://i.imgur.com/16YqXxG4.png",
@@ -96,4 +83,4 @@ export const tags = [
   "adventure",
 ];
 
-export const featuredIssue = "5"; // Latest issue to feature
+export const featuredIssue = "1"; // Latest issue to feature
