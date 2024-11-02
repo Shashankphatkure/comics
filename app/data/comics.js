@@ -21,8 +21,7 @@ export const comics = {
       "https://i.imgur.com/5YqXxG4.png",
       "https://i.imgur.com/6YqXxG4.png",
     ],
-    thumbnail:
-      "https://images.unsplash.com/photo-1618519764620-7403abdbdfe9?w=500&h=700",
+    thumbnail: "/comicdisplay.jpg",
     description:
       "A chance encounter leads to unexpected friendships and revelations.",
     releaseDate: "2024-01-15",
