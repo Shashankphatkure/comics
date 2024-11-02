@@ -105,10 +105,10 @@ export default function ComicViewer({ issue, pages }) {
       className={`flex flex-col items-center ${
         isFullscreen
           ? "fixed inset-0 bg-[var(--color-background)] z-50 p-4"
-          : ""
+          : "w-full"
       }`}
     >
-      {/* Controls Info - Updated text color */}
+      {/* Controls Info */}
       <div className="comic-panel p-4 mb-6 text-center w-full max-w-2xl">
         <p className="text-[var(--color-text)]">
           Use ← → arrow keys or swipe to navigate • Press F for fullscreen •
@@ -116,13 +116,10 @@ export default function ComicViewer({ issue, pages }) {
         </p>
       </div>
 
-      {/* Comic Display */}
+      {/* Comic Display - Updated sizing */}
       <div
-        className={`comic-panel relative mb-6
-        ${
-          isZoomed || isFullscreen
-            ? "w-full h-[80vh]"
-            : "aspect-square max-w-3xl"
+        className={`comic-panel relative mb-6 w-full ${
+          isZoomed || isFullscreen ? "h-[80vh]" : "h-[60vh]" // Fixed height when not in fullscreen
         }`}
         onClick={() => setIsZoomed(!isZoomed)}
         onTouchStart={handleTouchStart}
@@ -130,7 +127,7 @@ export default function ComicViewer({ issue, pages }) {
         onTouchEnd={handleTouchEnd}
       >
         {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/90 z-10">
+          <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-background)]/90 z-10">
             <div className="w-16 h-16 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
           </div>
         )}
@@ -140,6 +137,7 @@ export default function ComicViewer({ issue, pages }) {
             src={pages[currentPage]}
             alt={`Issue ${issue} - Page ${currentPage + 1}`}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
             className="object-contain"
             priority
             quality={100}
@@ -166,10 +164,14 @@ export default function ComicViewer({ issue, pages }) {
           <select
             value={currentPage}
             onChange={(e) => goToPage(Number(e.target.value))}
-            className="bg-transparent outline-none"
+            className="bg-transparent outline-none text-[var(--color-text)]"
           >
             {pages.map((_, index) => (
-              <option key={index} value={index}>
+              <option
+                key={index}
+                value={index}
+                className="bg-[var(--color-paper)]"
+              >
                 Page {index + 1}
               </option>
             ))}
@@ -191,7 +193,7 @@ export default function ComicViewer({ issue, pages }) {
 
       {/* Page Counter */}
       <div className="comic-panel px-4 py-2">
-        <span className="font-bold">
+        <span className="text-[var(--color-text)] font-bold">
           Page {currentPage + 1} of {pages.length}
         </span>
       </div>
