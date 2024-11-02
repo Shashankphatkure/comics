@@ -2,9 +2,9 @@ export const comics = {
   1: {
     title: "Origins",
     pages: [
-      "https://i.imgur.com/1YqXxG4.png",
-      "https://i.imgur.com/2YqXxG4.png",
-      "https://i.imgur.com/3YqXxG4.png",
+      "https://cdn.pixabay.com/photo/2024/05/14/10/51/ai-generated-8760871_640.png",
+      "https://cdn.prod.website-files.com/632ac1a36830f75c7e5b16f0/64f20036e35764be7b398cce_jBj1-9MZNQ9W-VJf42nUtyBya-GDpnBIEg8hhIKlRhE.webp",
+      "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/195b95c5-5e2e-4600-9c8a-68b9cf307ef5/df39g34-6f5d0166-4138-42b8-826a-a1a828f48147.jpg/v1/fill/w_755,h_1058,q_70,strp/captain_marvel_portrait_by_cierinblue_df39g34-pre.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTc5MyIsInBhdGgiOiJcL2ZcLzE5NWI5NWM1LTVlMmUtNDYwMC05YzhhLTY4YjljZjMwN2VmNVwvZGYzOWczNC02ZjVkMDE2Ni00MTM4LTQyYjgtODI2YS1hMWE4MjhmNDgxNDcuanBnIiwid2lkdGgiOiI8PTEyODAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.xRhVfWfFDE4IMBqFbFJzfynqztjvLQU5QRENowLuM04",
     ],
     thumbnail:
       "https://images.unsplash.com/photo-1588497859490-85d1c17db96d?w=500&h=700",

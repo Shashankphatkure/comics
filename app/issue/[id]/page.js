@@ -3,10 +3,12 @@ import ComicViewer from "@/app/components/ComicViewer";
 import BannerAd from "@/app/components/BannerAd";
 import Link from "next/link";
 
-export default function IssuePage({ params }) {
-  const issue = comics[params.id];
-  const prevIssue = comics[Number(params.id) - 1];
-  const nextIssue = comics[Number(params.id) + 1];
+export default async function IssuePage({ params }) {
+  // Convert params.id to string to ensure consistent type
+  const issueId = String(params.id);
+  const issue = comics[issueId];
+  const prevIssue = comics[Number(issueId) - 1];
+  const nextIssue = comics[Number(issueId) + 1];
 
   if (!issue) {
     return (
@@ -54,13 +56,13 @@ export default function IssuePage({ params }) {
           </div>
 
           {/* Comic Viewer */}
-          <ComicViewer issue={params.id} pages={issue.pages} />
+          <ComicViewer issue={issueId} pages={issue.pages} />
 
           {/* Issue Navigation */}
           <div className="flex justify-between items-center mt-8">
             {prevIssue ? (
               <Link
-                href={`/issue/${Number(params.id) - 1}`}
+                href={`/issue/${Number(issueId) - 1}`}
                 className="retro-button"
               >
                 ← Previous Issue
@@ -70,7 +72,7 @@ export default function IssuePage({ params }) {
             )}
             {nextIssue ? (
               <Link
-                href={`/issue/${Number(params.id) + 1}`}
+                href={`/issue/${Number(issueId) + 1}`}
                 className="retro-button"
               >
                 Next Issue →
@@ -94,7 +96,7 @@ export default function IssuePage({ params }) {
               <h3 className="retro-title text-xl mb-4">More Issues</h3>
               <div className="space-y-3">
                 {Object.entries(comics)
-                  .filter(([id]) => id !== params.id)
+                  .filter(([id]) => id !== issueId)
                   .slice(0, 3)
                   .map(([id, comic]) => (
                     <Link

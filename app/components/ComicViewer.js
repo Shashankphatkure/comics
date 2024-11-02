@@ -108,9 +108,9 @@ export default function ComicViewer({ issue, pages }) {
           : ""
       }`}
     >
-      {/* Controls Info */}
+      {/* Controls Info - Updated text color */}
       <div className="comic-panel p-4 mb-6 text-center w-full max-w-2xl">
-        <p className="text-[var(--color-secondary)]">
+        <p className="text-[var(--color-text)]">
           Use ← → arrow keys or swipe to navigate • Press F for fullscreen •
           Click image to zoom
         </p>
@@ -147,9 +147,7 @@ export default function ComicViewer({ issue, pages }) {
           />
         ) : (
           <div className="h-full flex items-center justify-center">
-            <span className="text-[var(--color-secondary)]">
-              Page not found
-            </span>
+            <span className="text-[var(--color-text)]">Page not found</span>
           </div>
         )}
       </div>
