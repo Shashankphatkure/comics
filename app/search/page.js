@@ -8,19 +8,30 @@ export default function SearchPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [filteredComics, setFilteredComics] = useState([]);
+  const [sortOrder, setSortOrder] = useState("newest"); // "newest" or "oldest"
 
   // Initialize with all comics when component mounts
   useEffect(() => {
-    setFilteredComics(Object.entries(comics));
+    const initialComics = Object.entries(comics);
+    sortComics(initialComics, sortOrder);
+    setFilteredComics(initialComics);
   }, []);
 
-  // Filter comics when search term or tags change
+  // Filter and sort comics when search term, tags, or sort order change
   useEffect(() => {
     filterComics();
-  }, [searchTerm, selectedTags]);
+  }, [searchTerm, selectedTags, sortOrder]);
+
+  const sortComics = (comicsArray, order) => {
+    return comicsArray.sort(([, a], [, b]) => {
+      const dateA = new Date(a.releaseDate);
+      const dateB = new Date(b.releaseDate);
+      return order === "newest" ? dateB - dateA : dateA - dateB;
+    });
+  };
 
   const filterComics = () => {
-    const results = Object.entries(comics).filter(([id, comic]) => {
+    let results = Object.entries(comics).filter(([id, comic]) => {
       const matchesSearch =
         searchTerm.trim() === "" ||
         comic.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -33,6 +44,8 @@ export default function SearchPage() {
       return matchesSearch && matchesTags;
     });
 
+    // Sort the filtered results
+    results = sortComics(results, sortOrder);
     setFilteredComics(results);
   };
 
@@ -41,10 +54,6 @@ export default function SearchPage() {
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
   };
-
-  // Add console.log to debug
-  console.log("Current filtered comics:", filteredComics);
-  console.log("Available comics:", comics);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -60,6 +69,33 @@ export default function SearchPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full px-4 py-2 rounded-md bg-[var(--color-background)] border-2 border-[var(--color-primary)] text-[var(--color-text)] placeholder-[var(--color-text)]/50 focus:outline-none focus:border-[var(--color-accent)]"
           />
+        </div>
+
+        {/* Sort Order */}
+        <div className="mb-6">
+          <h2 className="text-[var(--color-text)] text-xl mb-3">Sort By:</h2>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setSortOrder("newest")}
+              className={`px-4 py-2 rounded-md border-2 transition-colors ${
+                sortOrder === "newest"
+                  ? "bg-[var(--color-primary)] text-[var(--color-background)] border-[var(--color-primary)]"
+                  : "border-[var(--color-primary)] text-[var(--color-text)] hover:bg-[var(--color-primary)]/10"
+              }`}
+            >
+              Newest First
+            </button>
+            <button
+              onClick={() => setSortOrder("oldest")}
+              className={`px-4 py-2 rounded-md border-2 transition-colors ${
+                sortOrder === "oldest"
+                  ? "bg-[var(--color-primary)] text-[var(--color-background)] border-[var(--color-primary)]"
+                  : "border-[var(--color-primary)] text-[var(--color-text)] hover:bg-[var(--color-primary)]/10"
+              }`}
+            >
+              Oldest First
+            </button>
+          </div>
         </div>
 
         {/* Tags Filter */}
@@ -107,6 +143,9 @@ export default function SearchPage() {
                   <h3 className="text-white font-bold text-xl mb-1">
                     {comic.title}
                   </h3>
+                  <p className="text-white/80 text-sm mb-2">
+                    Released: {new Date(comic.releaseDate).toLocaleDateString()}
+                  </p>
                   <p className="text-white/80 text-sm mb-2">
                     {comic.description.substring(0, 100)}...
                   </p>
