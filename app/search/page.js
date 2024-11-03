@@ -137,7 +137,7 @@ export default function SearchPage() {
       </div>
 
       {/* Search Results */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-6">
         {filteredComics.map(([id, comic]) => (
           <Link href={`/issue/${id}`} key={id}>
             <div className="retro-card group cursor-pointer h-full">

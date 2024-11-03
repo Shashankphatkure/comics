@@ -17,7 +17,7 @@ export const comics = {
   2: {
     title: "The First Smoke",
     pages: ["/comicdisplay.jpg", "/comicdisplay2.jpg", "/comicdisplay.jpg"],
-    thumbnail: "/comicdisplay.jpg",
+    thumbnail: "/changes.jpg",
     description:
       "A chance encounter leads to unexpected friendships and revelations.",
     releaseDate: "2024-01-15",
