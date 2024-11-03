@@ -2,6 +2,7 @@ import localFont from "next/font/local";
 import Link from "next/link";
 import Image from "next/image";
 import "./globals.css";
+import SearchBar from "./components/SearchBar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,26 +34,35 @@ function Header() {
           />
         </Link>
       </div>
-      <nav className="flex items-center gap-6">
-        <Link
-          href="/"
-          className="text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors uppercase"
-        >
-          HOME
-        </Link>
-        <Link
-          href="/about"
-          className="text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors uppercase"
-        >
-          ABOUT
-        </Link>
-        <Link
-          href="/other"
-          className="text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors uppercase"
-        >
-          OTHER
-        </Link>
-      </nav>
+      <div className="flex items-center gap-6">
+        <SearchBar />
+        <nav className="flex items-center gap-6">
+          <Link
+            href="/"
+            className="text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors uppercase"
+          >
+            HOME
+          </Link>
+          <Link
+            href="/search"
+            className="text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors uppercase"
+          >
+            BROWSE
+          </Link>
+          <Link
+            href="/about"
+            className="text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors uppercase"
+          >
+            ABOUT
+          </Link>
+          <Link
+            href="/other"
+            className="text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors uppercase"
+          >
+            OTHER
+          </Link>
+        </nav>
+      </div>
     </header>
   );
 }
