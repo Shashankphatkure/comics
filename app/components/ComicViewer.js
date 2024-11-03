@@ -14,6 +14,8 @@ export default function ComicViewer({ issue, pages }) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
   const lastDistance = useRef(null);
+  const isDragging = useRef(false);
+  const dragStart = useRef({ x: 0, y: 0 });
 
   // Preload images
   useEffect(() => {
@@ -153,6 +155,56 @@ export default function ComicViewer({ issue, pages }) {
     }
   }, [handleWheel]);
 
+  // Add mouse event handlers
+  const handleMouseDown = (e) => {
+    if (scale > 1) {
+      isDragging.current = true;
+      dragStart.current = {
+        x: e.clientX - position.x,
+        y: e.clientY - position.y,
+      };
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging.current && scale > 1) {
+      const newX = e.clientX - dragStart.current.x;
+      const newY = e.clientY - dragStart.current.y;
+
+      // Calculate bounds to prevent dragging outside of visible area
+      const container = containerRef.current;
+      const bounds = {
+        x: (container.clientWidth * (scale - 1)) / 2,
+        y: (container.clientHeight * (scale - 1)) / 2,
+      };
+
+      setPosition({
+        x: Math.min(Math.max(newX, -bounds.x), bounds.x),
+        y: Math.min(Math.max(newY, -bounds.y), bounds.y),
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
+
+  // Add useEffect for mouse event listeners
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("mousedown", handleMouseDown);
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+
+      return () => {
+        container.removeEventListener("mousedown", handleMouseDown);
+        window.removeEventListener("mousemove", handleMouseMove);
+        window.removeEventListener("mouseup", handleMouseUp);
+      };
+    }
+  }, [scale]); // Add scale as dependency
+
   return (
     <div
       className={`flex flex-col items-center ${
@@ -216,12 +268,15 @@ export default function ComicViewer({ issue, pages }) {
 
         <div
           style={{
-            transform: `scale(${scale})`,
-            transition: "transform 0.1s ease-out",
+            transform: `scale(${scale}) translate(${position.x / scale}px, ${
+              position.y / scale
+            }px)`,
+            transition: scale === 1 ? "transform 0.1s ease-out" : "none",
             transformOrigin: "center center",
             height: "100%",
             width: "100%",
             position: "relative",
+            cursor: scale > 1 ? "grab" : "pointer",
           }}
         >
           {pages[currentPage] ? (
