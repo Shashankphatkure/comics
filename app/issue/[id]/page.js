@@ -30,8 +30,11 @@ export default async function IssuePage({ params }) {
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col lg:flex-row gap-8">
         <main className="flex-1">
-          {/* Issue Info */}
-          <div className="retro-card p-6 mb-8">
+          {/* Comic Viewer */}
+          <ComicViewer issue={issueId} pages={issue.pages} />
+
+          {/* Issue Info - Moved below Comic Viewer */}
+          <div className="retro-card p-6 my-8">
             <h2 className="retro-title text-3xl mb-4">{issue.title}</h2>
             <div className="flex flex-wrap gap-2 mb-4">
               {issue.tags.map((tag) => (
@@ -54,9 +57,6 @@ export default async function IssuePage({ params }) {
               </span>
             </div>
           </div>
-
-          {/* Comic Viewer */}
-          <ComicViewer issue={issueId} pages={issue.pages} />
 
           {/* Issue Navigation */}
           <div className="flex justify-between items-center mt-8">
