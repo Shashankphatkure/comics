@@ -1,5 +1,6 @@
 import localFont from "next/font/local";
 import Link from "next/link";
+import Image from "next/image";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -21,11 +22,15 @@ export const metadata = {
 function Header() {
   return (
     <header className="border-2 border-[var(--color-primary)] p-4 flex justify-between items-center bg-[var(--color-background)] sticky top-0 z-50">
-      <div className="border-2 border-[var(--color-primary)] p-2 hover:bg-[var(--color-primary)] transition-colors group">
+      <div className="border-2 border-[var(--color-primary)] p-2">
         <Link href="/" className="block">
-          <h1 className="text-[var(--color-primary)] text-2xl font-bold group-hover:text-[var(--color-text)]">
-            SOCIAL SMOKERS
-          </h1>
+          <Image
+            src="/logo.png"
+            alt="Social Smokers"
+            width={200}
+            height={40}
+            className="h-auto"
+          />
         </Link>
       </div>
       <nav className="flex items-center gap-6">
