@@ -184,6 +184,30 @@ export default function ComicViewer({ issue, pages }) {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
+        {/* Add zoom controls */}
+        <div className="absolute top-2 right-2 flex gap-2 z-20">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setScale((prev) => Math.min(prev + 0.5, 3));
+            }}
+            className="w-8 h-8 rounded bg-[var(--color-paper)] text-[var(--color-text)] hover:bg-[var(--color-primary)] transition-colors flex items-center justify-center shadow-md"
+            title="Zoom in"
+          >
+            +
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setScale((prev) => Math.max(prev - 0.5, 1));
+            }}
+            className="w-8 h-8 rounded bg-[var(--color-paper)] text-[var(--color-text)] hover:bg-[var(--color-primary)] transition-colors flex items-center justify-center shadow-md"
+            title="Zoom out"
+          >
+            −
+          </button>
+        </div>
+
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-background)]/90 z-10">
             <div className="w-16 h-16 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
