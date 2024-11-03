@@ -2,12 +2,14 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { comics } from "../data/comics";
+import { useRouter } from "next/navigation";
 
 export default function SearchBar() {
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const searchRef = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -43,6 +45,14 @@ export default function SearchBar() {
     setIsOpen(true);
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      router.push(`/search?q=${encodeURIComponent(searchTerm)}`);
+      setIsOpen(false);
+    }
+  };
+
   return (
     <div className="relative" ref={searchRef}>
       <div className="relative">
@@ -51,9 +61,18 @@ export default function SearchBar() {
           placeholder="Search comics..."
           value={searchTerm}
           onChange={handleSearch}
+          onKeyPress={handleKeyPress}
           className="px-4 py-2 rounded-md bg-[var(--color-background)] border-2 border-[var(--color-primary)] text-[var(--color-text)] placeholder-[var(--color-text)]/50 focus:outline-none focus:border-[var(--color-accent)] w-[200px]"
         />
-        <button className="absolute right-3 top-1/2 -translate-y-1/2">
+        <button
+          className="absolute right-3 top-1/2 -translate-y-1/2"
+          onClick={() => {
+            if (searchTerm.trim()) {
+              router.push(`/search?q=${encodeURIComponent(searchTerm)}`);
+              setIsOpen(false);
+            }
+          }}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

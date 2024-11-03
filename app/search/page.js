@@ -3,12 +3,14 @@ import { useState, useEffect } from "react";
 import { comics, tags } from "../data/comics";
 import Link from "next/link";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 export default function SearchPage() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const searchParams = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
   const [selectedTags, setSelectedTags] = useState([]);
   const [filteredComics, setFilteredComics] = useState([]);
-  const [sortOrder, setSortOrder] = useState("newest"); // "newest" or "oldest"
+  const [sortOrder, setSortOrder] = useState("newest");
 
   // Initialize with all comics when component mounts
   useEffect(() => {
@@ -21,6 +23,14 @@ export default function SearchPage() {
   useEffect(() => {
     filterComics();
   }, [searchTerm, selectedTags, sortOrder]);
+
+  // Update search term when URL parameter changes
+  useEffect(() => {
+    const queryTerm = searchParams.get("q");
+    if (queryTerm) {
+      setSearchTerm(queryTerm);
+    }
+  }, [searchParams]);
 
   const sortComics = (comicsArray, order) => {
     return comicsArray.sort(([, a], [, b]) => {
@@ -127,7 +137,7 @@ export default function SearchPage() {
       </div>
 
       {/* Search Results */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {filteredComics.map(([id, comic]) => (
           <Link href={`/issue/${id}`} key={id}>
             <div className="retro-card group cursor-pointer h-full">
