@@ -10,6 +10,10 @@ export default function ComicViewer({ issue, pages }) {
   const [isLoading, setIsLoading] = useState(true);
   const touchStartX = useRef(null);
   const touchEndX = useRef(null);
+  const [scale, setScale] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const containerRef = useRef(null);
+  const lastDistance = useRef(null);
 
   // Preload images
   useEffect(() => {
@@ -42,30 +46,55 @@ export default function ComicViewer({ issue, pages }) {
 
   // Touch navigation
   const handleTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
+    if (e.touches.length === 2) {
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      lastDistance.current = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+      );
+    } else {
+      touchStartX.current = e.touches[0].clientX;
+    }
   };
 
   const handleTouchMove = (e) => {
-    touchEndX.current = e.touches[0].clientX;
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+      );
+
+      if (lastDistance.current) {
+        const delta = distance - lastDistance.current;
+        setScale((prevScale) =>
+          Math.min(Math.max(1, prevScale + delta * 0.01), 3)
+        );
+      }
+      lastDistance.current = distance;
+    } else {
+      touchEndX.current = e.touches[0].clientX;
+    }
   };
 
   const handleTouchEnd = () => {
+    lastDistance.current = null;
     if (!touchStartX.current || !touchEndX.current) return;
 
     const diff = touchStartX.current - touchEndX.current;
-    const threshold = 50; // minimum distance for swipe
+    const threshold = 50;
 
-    if (Math.abs(diff) > threshold) {
+    if (Math.abs(diff) > threshold && scale === 1) {
       if (diff > 0) {
-        // Swipe left
         goToPage(currentPage + 1);
       } else {
-        // Swipe right
         goToPage(currentPage - 1);
       }
     }
 
-    // Reset values
     touchStartX.current = null;
     touchEndX.current = null;
   };
@@ -100,6 +129,30 @@ export default function ComicViewer({ issue, pages }) {
     }
   };
 
+  // Add zoom handling for mouse wheel
+  const handleWheel = useCallback((e) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = e.deltaY * -0.01;
+      setScale((prevScale) => Math.min(Math.max(1, prevScale + delta), 3));
+    }
+  }, []);
+
+  // Reset zoom when page changes
+  useEffect(() => {
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+  }, [currentPage]);
+
+  // Add wheel event listener
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("wheel", handleWheel, { passive: false });
+      return () => container.removeEventListener("wheel", handleWheel);
+    }
+  }, [handleWheel]);
+
   return (
     <div
       className={`flex flex-col items-center ${
@@ -118,10 +171,15 @@ export default function ComicViewer({ issue, pages }) {
 
       {/* Comic Display - Updated sizing */}
       <div
-        className={`comic-panel relative mb-6 w-full ${
-          isZoomed || isFullscreen ? "h-[80vh]" : "h-[60vh]" // Fixed height when not in fullscreen
+        ref={containerRef}
+        className={`comic-panel relative mb-6 w-full overflow-hidden ${
+          isZoomed || isFullscreen ? "h-[80vh]" : "h-[60vh]"
         }`}
-        onClick={() => setIsZoomed(!isZoomed)}
+        onClick={() => {
+          if (scale === 1) {
+            setIsZoomed(!isZoomed);
+          }
+        }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -132,22 +190,33 @@ export default function ComicViewer({ issue, pages }) {
           </div>
         )}
 
-        {pages[currentPage] ? (
-          <Image
-            src={pages[currentPage]}
-            alt={`Issue ${issue} - Page ${currentPage + 1}`}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-            className="object-contain"
-            priority
-            quality={100}
-            onLoadingComplete={() => setIsLoading(false)}
-          />
-        ) : (
-          <div className="h-full flex items-center justify-center">
-            <span className="text-[var(--color-text)]">Page not found</span>
-          </div>
-        )}
+        <div
+          style={{
+            transform: `scale(${scale})`,
+            transition: "transform 0.1s ease-out",
+            transformOrigin: "center center",
+            height: "100%",
+            width: "100%",
+            position: "relative",
+          }}
+        >
+          {pages[currentPage] ? (
+            <Image
+              src={pages[currentPage]}
+              alt={`Issue ${issue} - Page ${currentPage + 1}`}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+              className="object-contain"
+              priority
+              quality={100}
+              onLoadingComplete={() => setIsLoading(false)}
+            />
+          ) : (
+            <div className="h-full flex items-center justify-center">
+              <span className="text-[var(--color-text)]">Page not found</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Navigation Controls */}
