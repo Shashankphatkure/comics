@@ -37,7 +37,7 @@ export default function Home() {
               {Object.entries(comics).map(([id, issue]) => (
                 <Link href={`/issue/${id}`} key={id}>
                   <div className="retro-card group cursor-pointer h-full">
-                    <div className="relative aspect-[2/3] overflow-hidden">
+                    <div className="relative aspect-square overflow-hidden">
                       <Image
                         src={issue.thumbnail || "/placeholder-comic.jpg"}
                         alt={issue.title}

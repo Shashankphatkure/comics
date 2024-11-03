@@ -141,7 +141,7 @@ function SearchContent() {
         {filteredComics.map(([id, comic]) => (
           <Link href={`/issue/${id}`} key={id}>
             <div className="retro-card group cursor-pointer h-full">
-              <div className="relative aspect-[2/3] overflow-hidden">
+              <div className="relative aspect-square overflow-hidden">
                 <Image
                   src={comic.thumbnail || "/placeholder-comic.jpg"}
                   alt={comic.title}

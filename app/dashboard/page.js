@@ -180,6 +180,9 @@ export default function Dashboard() {
                   className="w-full p-2 border rounded bg-[var(--color-background)] text-[var(--color-text)]"
                   required
                 />
+                <p className="text-sm text-[var(--color-text)]/70 mt-1">
+                  Recommended size: 800x800px square image
+                </p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -249,7 +252,7 @@ export default function Dashboard() {
             <div className="space-y-4">
               <h3 className="text-xl mb-4">Preview</h3>
               <div className="retro-card p-4">
-                <div className="relative aspect-[2/3] mb-4">
+                <div className="relative aspect-square mb-4">
                   {formData.thumbnail && (
                     <Image
                       src={formData.thumbnail}
@@ -284,7 +287,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Object.entries(comics).map(([id, comic]) => (
             <div key={id} className="retro-card p-4">
-              <div className="relative aspect-[2/3] mb-4">
+              <div className="relative aspect-square mb-4">
                 <Image
                   src={comic.thumbnail || "/placeholder-comic.jpg"}
                   alt={comic.title}
