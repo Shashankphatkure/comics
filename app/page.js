@@ -119,17 +119,6 @@ export default function Home() {
                 </a>
               </div>
             </div>
-
-            {/* Reading Progress */}
-            <div className="retro-card p-6">
-              <h3 className="retro-title text-xl mb-4">Your Progress</h3>
-              <div className="space-y-2">
-                <p className="text-sm text-[var(--color-text)]">
-                  Continue reading from where you left off
-                </p>
-                <button className="retro-button w-full">Resume Reading</button>
-              </div>
-            </div>
           </div>
         </aside>
       </div>
