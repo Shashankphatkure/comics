@@ -33,7 +33,7 @@ export default function Home() {
             <h2 className="retro-title text-4xl mb-8 text-center">
               Latest Issues
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
               {Object.entries(comics).map(([id, issue]) => (
                 <Link href={`/issue/${id}`} key={id}>
                   <div className="retro-card group cursor-pointer h-full">

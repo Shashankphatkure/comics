@@ -114,21 +114,6 @@ export default async function IssuePage({ params }) {
                   ))}
               </div>
             </div>
-
-            {/* Reading Stats */}
-            <div className="retro-card p-6">
-              <h3 className="retro-title text-xl mb-4">Reading Stats</h3>
-              <div className="space-y-2 text-[var(--color-text)]">
-                <div className="flex justify-between">
-                  <span>Time spent:</span>
-                  <span>12 mins</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Pages read:</span>
-                  <span>6/12</span>
-                </div>
-              </div>
-            </div>
           </div>
         </aside>
       </div>

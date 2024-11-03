@@ -57,6 +57,22 @@ function Header() {
   );
 }
 
+function Footer() {
+  return (
+    <footer className="border-t-2 border-[var(--color-primary)] mt-8 py-6 bg-[var(--color-background)]">
+      <div className="container mx-auto px-4 text-center">
+        <p className="text-[var(--color-text)] text-sm">
+          © {new Date().getFullYear()} Social Smokers. All rights reserved.
+        </p>
+        <p className="text-[var(--color-text)] text-xs mt-2">
+          All characters and content are fictional. Any resemblance to real
+          persons or events is purely coincidental.
+        </p>
+      </div>
+    </footer>
+  );
+}
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
@@ -68,6 +84,7 @@ export default function RootLayout({ children }) {
           <div className="relative z-10">
             <Header />
             {children}
+            <Footer />
           </div>
         </div>
       </body>
