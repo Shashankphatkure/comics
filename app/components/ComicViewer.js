@@ -155,55 +155,77 @@ export default function ComicViewer({ issue, pages }) {
     }
   }, [handleWheel]);
 
-  // Add mouse event handlers
+  // Update the mouse event handlers
   const handleMouseDown = (e) => {
-    if (scale > 1) {
+    // Only initiate drag if left mouse button is clicked and image is zoomed
+    if (e.button === 0 && scale > 1) {
+      e.preventDefault(); // Prevent image dragging default behavior
       isDragging.current = true;
       dragStart.current = {
         x: e.clientX - position.x,
         y: e.clientY - position.y,
       };
+      // Change cursor to grabbing while dragging
+      e.target.style.cursor = "grabbing";
     }
   };
 
-  const handleMouseMove = (e) => {
-    if (isDragging.current && scale > 1) {
-      const newX = e.clientX - dragStart.current.x;
-      const newY = e.clientY - dragStart.current.y;
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (isDragging.current && scale > 1) {
+        e.preventDefault();
+        const newX = e.clientX - dragStart.current.x;
+        const newY = e.clientY - dragStart.current.y;
 
-      // Calculate bounds to prevent dragging outside of visible area
-      const container = containerRef.current;
-      const bounds = {
-        x: (container.clientWidth * (scale - 1)) / 2,
-        y: (container.clientHeight * (scale - 1)) / 2,
-      };
+        // Calculate maximum allowed movement based on zoom level
+        const container = containerRef.current;
+        const bounds = {
+          x: (container.clientWidth * (scale - 1)) / 2,
+          y: (container.clientHeight * (scale - 1)) / 2,
+        };
 
-      setPosition({
-        x: Math.min(Math.max(newX, -bounds.x), bounds.x),
-        y: Math.min(Math.max(newY, -bounds.y), bounds.y),
-      });
-    }
-  };
+        // Apply bounds with smoother movement
+        setPosition({
+          x: Math.max(-bounds.x, Math.min(bounds.x, newX)),
+          y: Math.max(-bounds.y, Math.min(bounds.y, newY)),
+        });
+      }
+    },
+    [scale]
+  );
 
-  const handleMouseUp = () => {
-    isDragging.current = false;
-  };
+  const handleMouseUp = useCallback(
+    (e) => {
+      if (isDragging.current) {
+        e.preventDefault();
+        isDragging.current = false;
+        // Reset cursor
+        if (containerRef.current) {
+          containerRef.current.style.cursor = scale > 1 ? "grab" : "pointer";
+        }
+      }
+    },
+    [scale]
+  );
 
-  // Add useEffect for mouse event listeners
+  // Update the mouse events useEffect
   useEffect(() => {
     const container = containerRef.current;
     if (container) {
       container.addEventListener("mousedown", handleMouseDown);
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+      // Also handle case when mouse leaves the window
+      document.addEventListener("mouseleave", handleMouseUp);
 
       return () => {
         container.removeEventListener("mousedown", handleMouseDown);
-        window.removeEventListener("mousemove", handleMouseMove);
-        window.removeEventListener("mouseup", handleMouseUp);
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+        document.removeEventListener("mouseleave", handleMouseUp);
       };
     }
-  }, [scale]); // Add scale as dependency
+  }, [handleMouseMove, handleMouseUp]);
 
   return (
     <div
@@ -227,8 +249,9 @@ export default function ComicViewer({ issue, pages }) {
         className={`comic-panel relative mb-6 w-full overflow-hidden ${
           isZoomed || isFullscreen ? "h-[80vh]" : "h-[60vh]"
         }`}
-        onClick={() => {
-          if (scale === 1) {
+        onClick={(e) => {
+          // Only toggle zoom if we haven't been dragging
+          if (scale === 1 && !isDragging.current) {
             setIsZoomed(!isZoomed);
           }
         }}
@@ -271,12 +294,18 @@ export default function ComicViewer({ issue, pages }) {
             transform: `scale(${scale}) translate(${position.x / scale}px, ${
               position.y / scale
             }px)`,
-            transition: scale === 1 ? "transform 0.1s ease-out" : "none",
+            transition: isDragging.current ? "none" : "transform 0.1s ease-out",
             transformOrigin: "center center",
             height: "100%",
             width: "100%",
             position: "relative",
-            cursor: scale > 1 ? "grab" : "pointer",
+            cursor:
+              scale > 1
+                ? isDragging.current
+                  ? "grabbing"
+                  : "grab"
+                : "pointer",
+            userSelect: "none", // Prevent text selection during drag
           }}
         >
           {pages[currentPage] ? (
