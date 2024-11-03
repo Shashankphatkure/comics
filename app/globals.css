@@ -8,30 +8,30 @@
   --color-secondary: #000000; /* Pure black */
   --color-accent: #ff3333; /* Slightly lighter red for hover */
   --color-background: #000000; /* Pure black background */
-  --color-paper: #111111; /* Very dark gray for cards */
+  --color-paper: 17, 17, 17; /* Changed to RGB format */
   --color-text: #ffffff; /* Pure white text */
   --color-text-secondary: #cccccc; /* Light gray for secondary text */
 }
 
 body {
   background-color: var(--color-background);
-  background-image: linear-gradient(
-      to right,
-      rgba(255, 0, 0, 0.1) 1px,
-      transparent 1px
-    ),
-    linear-gradient(to bottom, rgba(255, 0, 0, 0.1) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-image: url("/backg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--color-text);
+  min-height: 100vh;
 }
 
 /* Gumroad-style card styling */
 .retro-card {
-  background: var(--color-paper);
+  background: rgba(var(--color-paper), 0.9);
   border: 2px solid var(--color-primary);
   box-shadow: 4px 4px 0 var(--color-primary);
   transition: all 0.2s ease;
   position: relative;
+  backdrop-filter: blur(5px);
 }
 
 .retro-card:hover {
@@ -74,9 +74,10 @@ body {
 
 /* Comic panel effect */
 .comic-panel {
-  background: var(--color-paper);
+  background: rgba(var(--color-paper), 0.9);
   border: 2px solid var(--color-primary);
   box-shadow: 4px 4px 0 var(--color-primary);
+  backdrop-filter: blur(5px);
 }
 
 /* Select styling */
@@ -123,4 +124,9 @@ body {
 ::selection {
   background: var(--color-primary);
   color: var(--color-text);
+}
+
+/* Add this new style to ensure proper background display */
+html {
+  height: 100%;
 }
