@@ -121,15 +121,41 @@ export default function ComicViewer({ issue, pages }) {
   }, [currentPage, goToPage]);
 
   // Fullscreen handling
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        const element = containerRef.current.parentElement;
+        await element.requestFullscreen();
+        setIsFullscreen(true);
+        // Reset zoom and position when entering fullscreen
+        setScale(1);
+        setPosition({ x: 0, y: 0 });
+      } else {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+        // Reset zoom and position when exiting fullscreen
+        setScale(1);
+        setPosition({ x: 0, y: 0 });
+      }
+    } catch (err) {
+      console.error("Error toggling fullscreen:", err);
     }
   };
+
+  // Add fullscreen change event listener
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+      if (!document.fullscreenElement) {
+        setScale(1);
+        setPosition({ x: 0, y: 0 });
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
 
   // Add zoom handling for mouse wheel
   const handleWheel = useCallback((e) => {
@@ -229,150 +255,162 @@ export default function ComicViewer({ issue, pages }) {
 
   return (
     <div
-      className={`flex flex-col items-center ${
-        isFullscreen
-          ? "fixed inset-0 bg-[var(--color-background)] z-50 p-4"
-          : "w-full"
+      className={`comic-viewer-container ${
+        isFullscreen ? "fixed inset-0 bg-black z-50" : "relative w-full"
       }`}
     >
-      {/* Controls Info */}
-      <div className="comic-panel p-4 mb-6 text-center w-full max-w-2xl">
-        <p className="text-[var(--color-text)]">
-          Use ← → arrow keys or swipe to navigate • Press F for fullscreen •
-          Click image to zoom
-        </p>
-      </div>
-
-      {/* Comic Display - Updated sizing */}
+      {/* Main viewer container */}
       <div
-        ref={containerRef}
-        className={`comic-panel relative mb-6 w-full overflow-hidden ${
-          isZoomed || isFullscreen ? "h-[80vh]" : "h-[60vh]"
+        className={`flex flex-col items-center ${
+          isFullscreen ? "h-screen p-4" : "w-full"
         }`}
-        onClick={(e) => {
-          // Only toggle zoom if we haven't been dragging
-          if (scale === 1 && !isDragging.current) {
-            setIsZoomed(!isZoomed);
-          }
-        }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
-        {/* Add zoom controls */}
-        <div className="absolute top-2 right-2 flex gap-2 z-20">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setScale((prev) => Math.min(prev + 0.5, 3));
-            }}
-            className="w-8 h-8 rounded bg-[var(--color-paper)] text-[var(--color-text)] hover:bg-[var(--color-primary)] transition-colors flex items-center justify-center shadow-md"
-            title="Zoom in"
-          >
-            +
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setScale((prev) => Math.max(prev - 0.5, 1));
-            }}
-            className="w-8 h-8 rounded bg-[var(--color-paper)] text-[var(--color-text)] hover:bg-[var(--color-primary)] transition-colors flex items-center justify-center shadow-md"
-            title="Zoom out"
-          >
-            −
-          </button>
+        {/* Controls Info */}
+        <div className="comic-panel p-4 mb-4 text-center w-full max-w-2xl">
+          <p className="text-[var(--color-text)]">
+            Use ← → arrow keys or swipe to navigate • Press F for fullscreen •
+            Click image to zoom
+          </p>
         </div>
 
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-background)]/90 z-10">
-            <div className="w-16 h-16 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
-          </div>
-        )}
-
+        {/* Comic Display */}
         <div
+          ref={containerRef}
+          className={`comic-panel relative w-full ${
+            isFullscreen ? "h-[85vh]" : "h-[60vh]"
+          } flex items-center justify-center overflow-hidden`}
           style={{
-            transform: `scale(${scale}) translate(${position.x / scale}px, ${
-              position.y / scale
-            }px)`,
-            transition: isDragging.current ? "none" : "transform 0.1s ease-out",
-            transformOrigin: "center center",
-            height: "100%",
-            width: "100%",
-            position: "relative",
-            cursor:
-              scale > 1
-                ? isDragging.current
-                  ? "grabbing"
-                  : "grab"
-                : "pointer",
-            userSelect: "none", // Prevent text selection during drag
+            maxWidth: isFullscreen ? "95vw" : "100%",
+            margin: "0 auto",
           }}
         >
-          {pages[currentPage] ? (
-            <Image
-              src={pages[currentPage]}
-              alt={`Issue ${issue} - Page ${currentPage + 1}`}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-              className="object-contain"
-              priority
-              quality={100}
-              onLoadingComplete={() => setIsLoading(false)}
-            />
-          ) : (
-            <div className="h-full flex items-center justify-center">
-              <span className="text-[var(--color-text)]">Page not found</span>
+          {/* Image Container */}
+          <div
+            className="relative w-full h-full"
+            style={{
+              transform: `scale(${scale}) translate(${position.x / scale}px, ${
+                position.y / scale
+              }px)`,
+              transition: isDragging.current
+                ? "none"
+                : "transform 0.1s ease-out",
+              transformOrigin: "center center",
+              cursor:
+                scale > 1
+                  ? isDragging.current
+                    ? "grabbing"
+                    : "grab"
+                  : "pointer",
+            }}
+            onClick={(e) => {
+              if (scale === 1 && !isDragging.current) {
+                setIsZoomed(!isZoomed);
+              }
+            }}
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            {pages[currentPage] ? (
+              <Image
+                src={pages[currentPage]}
+                alt={`Issue ${issue} - Page ${currentPage + 1}`}
+                fill
+                sizes={
+                  isFullscreen ? "100vw" : "(max-width: 1200px) 80vw, 70vw"
+                }
+                className="object-contain"
+                priority
+                quality={100}
+                onLoadingComplete={() => setIsLoading(false)}
+              />
+            ) : (
+              <div className="flex items-center justify-center w-full h-full">
+                <span className="text-[var(--color-text)]">Page not found</span>
+              </div>
+            )}
+          </div>
+
+          {/* Loading Spinner */}
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-background)]/90 z-10">
+              <div className="w-16 h-16 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
             </div>
           )}
+
+          {/* Zoom Controls */}
+          <div className="absolute top-4 right-4 flex gap-2 z-20">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setScale((prev) => Math.min(prev + 0.5, 3));
+              }}
+              className="w-8 h-8 rounded bg-[var(--color-paper)] text-[var(--color-text)] hover:bg-[var(--color-primary)] transition-colors flex items-center justify-center shadow-md"
+              title="Zoom in"
+            >
+              +
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setScale((prev) => Math.max(prev - 0.5, 1));
+              }}
+              className="w-8 h-8 rounded bg-[var(--color-paper)] text-[var(--color-text)] hover:bg-[var(--color-primary)] transition-colors flex items-center justify-center shadow-md"
+              title="Zoom out"
+            >
+              −
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Navigation Controls */}
-      <div className="flex flex-wrap items-center justify-center gap-4 mb-4">
-        <button
-          onClick={() => goToPage(currentPage - 1)}
-          disabled={currentPage === 0}
-          className="retro-button"
-        >
-          ← Previous
-        </button>
-
-        <div className="retro-select">
-          <select
-            value={currentPage}
-            onChange={(e) => goToPage(Number(e.target.value))}
-            className="bg-transparent outline-none text-[var(--color-text)]"
+        {/* Navigation Controls */}
+        <div className="flex items-center justify-center gap-4 mt-4">
+          <button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 0}
+            className="retro-button"
           >
-            {pages.map((_, index) => (
-              <option
-                key={index}
-                value={index}
-                className="bg-[var(--color-paper)]"
-              >
-                Page {index + 1}
-              </option>
-            ))}
-          </select>
+            ← Previous
+          </button>
+
+          <div className="retro-select">
+            <select
+              value={currentPage}
+              onChange={(e) => goToPage(Number(e.target.value))}
+              className="bg-transparent outline-none text-[var(--color-text)]"
+            >
+              {pages.map((_, index) => (
+                <option
+                  key={index}
+                  value={index}
+                  className="bg-[var(--color-paper)]"
+                >
+                  Page {index + 1}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === pages.length - 1}
+            className="retro-button"
+          >
+            Next →
+          </button>
+
+          <button onClick={toggleFullscreen} className="retro-button">
+            {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+          </button>
         </div>
 
-        <button
-          onClick={() => goToPage(currentPage + 1)}
-          disabled={currentPage === pages.length - 1}
-          className="retro-button"
-        >
-          Next →
-        </button>
-
-        <button onClick={toggleFullscreen} className="retro-button">
-          {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-        </button>
-      </div>
-
-      {/* Page Counter */}
-      <div className="comic-panel px-4 py-2">
-        <span className="text-[var(--color-text)] font-bold">
-          Page {currentPage + 1} of {pages.length}
-        </span>
+        {/* Page Counter */}
+        <div className="comic-panel px-4 py-2 mt-4">
+          <span className="text-[var(--color-text)] font-bold">
+            Page {currentPage + 1} of {pages.length}
+          </span>
+        </div>
       </div>
     </div>
   );
