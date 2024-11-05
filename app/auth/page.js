@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { useRouter } from "next/navigation";
 
@@ -10,20 +10,50 @@ export default function Auth() {
   const [error, setError] = useState(null);
   const router = useRouter();
 
+  useEffect(() => {
+    const checkUser = async () => {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+      console.log("Current session:", session);
+      console.log("Session error:", error);
+
+      if (session) {
+        console.log("User is logged in, redirecting to dashboard...");
+        router.replace("/dashboard");
+      }
+    };
+    checkUser();
+  }, [router]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
+      console.log("Attempting login with email:", email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
+      console.log("Login response data:", data);
+      console.log("Login error:", error);
+
       if (error) throw error;
-      router.push("/dashboard");
+
+      console.log("Login successful, redirecting...");
+      // Use replace instead of push to prevent back button issues
+      router.replace("/dashboard");
+
+      // Add a small delay before refresh to ensure the session is properly set
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 100);
     } catch (error) {
+      console.error("Login error:", error);
       setError(error.message);
     } finally {
       setLoading(false);
