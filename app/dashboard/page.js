@@ -6,6 +6,7 @@ import Image from "next/image";
 
 export default function Dashboard() {
   const [comics, setComics] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [editingComic, setEditingComic] = useState(null);
   const [activeTab, setActiveTab] = useState("list");
   const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ export default function Dashboard() {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
-    fetchComics();
+    fetchComics().finally(() => setLoading(false));
   }, []);
 
   const fetchComics = async () => {
@@ -198,6 +199,16 @@ export default function Dashboard() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="retro-card p-8 text-center">
+          <p className="text-[var(--color-text)] text-xl">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
@@ -232,15 +243,19 @@ export default function Dashboard() {
         </div>
         <div className="retro-card p-6">
           <h3 className="text-lg mb-2">Latest Issue</h3>
-          <p className="text-3xl font-bold">#{comics[comics.length - 1].id}</p>
+          <p className="text-3xl font-bold">
+            #{comics.length > 0 ? comics[comics.length - 1].id : 0}
+          </p>
         </div>
         <div className="retro-card p-6">
           <h3 className="text-lg mb-2">Average Rating</h3>
           <p className="text-3xl font-bold">
-            {(
-              comics.reduce((acc, comic) => acc + comic.rating, 0) /
-              comics.length
-            ).toFixed(1)}
+            {comics.length > 0
+              ? (
+                  comics.reduce((acc, comic) => acc + comic.rating, 0) /
+                  comics.length
+                ).toFixed(1)
+              : "0.0"}
           </p>
         </div>
       </div>
