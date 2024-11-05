@@ -22,6 +22,10 @@ export default function Dashboard() {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterTag, setFilterTag] = useState("");
+  const [sortBy, setSortBy] = useState("newest"); // "newest", "oldest", "rating"
+
   useEffect(() => {
     fetchComics().finally(() => setLoading(false));
   }, []);
@@ -214,13 +218,45 @@ export default function Dashboard() {
 
   const handleTagsChange = (e) => {
     const tagsString = e.target.value;
+    const tagsArray = tagsString
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0);
+
     setFormData((prev) => ({
       ...prev,
-      tags: tagsString
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter((tag) => tag),
+      tags: tagsArray,
     }));
+  };
+
+  const getFilteredComics = () => {
+    return comics
+      .filter((comic) => {
+        const matchesSearch =
+          comic.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          comic.description.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesTag = filterTag === "" || comic.tags.includes(filterTag);
+        return matchesSearch && matchesTag;
+      })
+      .sort((a, b) => {
+        switch (sortBy) {
+          case "oldest":
+            return new Date(a.release_date) - new Date(b.release_date);
+          case "rating":
+            return b.rating - a.rating;
+          case "newest":
+          default:
+            return new Date(b.release_date) - new Date(a.release_date);
+        }
+      });
+  };
+
+  const getAllTags = () => {
+    const tags = new Set();
+    comics.forEach((comic) => {
+      comic.tags.forEach((tag) => tags.add(tag));
+    });
+    return Array.from(tags);
   };
 
   if (loading) {
@@ -259,8 +295,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      {/* Stats Overview - Now 4 columns */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="retro-card p-6">
           <h3 className="text-lg mb-2">Total Comics</h3>
           <p className="text-3xl font-bold">{comics.length}</p>
@@ -281,6 +317,10 @@ export default function Dashboard() {
                 ).toFixed(1)
               : "0.0"}
           </p>
+        </div>
+        <div className="retro-card p-6">
+          <h3 className="text-lg mb-2">Total Tags</h3>
+          <p className="text-3xl font-bold">{getAllTags().length}</p>
         </div>
       </div>
 
@@ -408,8 +448,12 @@ export default function Dashboard() {
                 <label className="block mb-2">Tags (comma-separated)</label>
                 <input
                   type="text"
-                  value={formData.tags.join(", ")}
+                  name="tags"
+                  value={
+                    Array.isArray(formData.tags) ? formData.tags.join(", ") : ""
+                  }
                   onChange={handleTagsChange}
+                  placeholder="action, adventure, fantasy"
                   className="w-full p-2 border rounded bg-[var(--color-background)] text-[var(--color-text)]"
                 />
               </div>
@@ -477,48 +521,102 @@ export default function Dashboard() {
           </div>
         </div>
       ) : (
-        /* Comics List */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {comics.map((comic) => (
-            <div key={comic.id} className="retro-card p-4">
-              <div className="relative aspect-square mb-4">
-                <Image
-                  src={comic.thumbnail || "/placeholder-comic.jpg"}
-                  alt={comic.title}
-                  fill
-                  className="object-cover rounded"
+        <>
+          {/* Add Filter Section */}
+          <div className="retro-card p-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block mb-2">Search Comics</label>
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search by title or description..."
+                  className="w-full p-2 border rounded bg-[var(--color-background)] text-[var(--color-text)]"
                 />
               </div>
-              <h3 className="text-xl font-bold mb-2">{comic.title}</h3>
-              <p className="text-sm mb-2">Issue #{comic.id}</p>
-              <p className="text-sm mb-4 line-clamp-2">{comic.description}</p>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {comic.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="px-2 py-1 bg-[var(--color-primary)] text-white rounded text-xs"
-                  >
-                    {tag}
-                  </span>
-                ))}
+              <div>
+                <label className="block mb-2">Filter by Tag</label>
+                <select
+                  value={filterTag}
+                  onChange={(e) => setFilterTag(e.target.value)}
+                  className="w-full p-2 border rounded bg-[var(--color-background)] text-[var(--color-text)]"
+                >
+                  <option value="">All Tags</option>
+                  {getAllTags().map((tag) => (
+                    <option key={tag} value={tag}>
+                      {tag}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleEdit(comic.id)}
-                  className="retro-button text-sm"
+              <div>
+                <label className="block mb-2">Sort By</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="w-full p-2 border rounded bg-[var(--color-background)] text-[var(--color-text)]"
                 >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(comic.id)}
-                  className="retro-button text-sm bg-red-500 hover:bg-red-600"
-                >
-                  Delete
-                </button>
+                  <option value="newest">Newest First</option>
+                  <option value="oldest">Oldest First</option>
+                  <option value="rating">Highest Rating</option>
+                </select>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+
+          {/* Modify the Comics List to use filtered results */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {getFilteredComics().map((comic) => (
+              <div key={comic.id} className="retro-card p-4">
+                <div className="relative aspect-square mb-4">
+                  <Image
+                    src={comic.thumbnail || "/placeholder-comic.jpg"}
+                    alt={comic.title}
+                    fill
+                    className="object-cover rounded"
+                  />
+                </div>
+                <h3 className="text-xl font-bold mb-2">{comic.title}</h3>
+                <p className="text-sm mb-2">Issue #{comic.id}</p>
+                <p className="text-sm mb-4 line-clamp-2">{comic.description}</p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {comic.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="px-2 py-1 bg-[var(--color-primary)] text-white rounded text-xs"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEdit(comic.id)}
+                    className="retro-button text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(comic.id)}
+                    className="retro-button text-sm bg-red-500 hover:bg-red-600"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Add No Results Message */}
+          {getFilteredComics().length === 0 && (
+            <div className="text-center py-8">
+              <p className="text-[var(--color-text)] text-xl">
+                No comics found matching your search criteria
+              </p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
