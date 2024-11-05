@@ -55,23 +55,32 @@ function SearchContent() {
     });
   };
 
-  const filterComics = () => {
-    let results = Object.entries(comics).filter(([id, comic]) => {
-      const matchesSearch =
-        searchTerm.trim() === "" ||
-        comic.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        comic.description.toLowerCase().includes(searchTerm.toLowerCase());
+  const filterComics = async () => {
+    let query = supabase.from("comics").select("*");
 
-      const matchesTags =
-        selectedTags.length === 0 ||
-        selectedTags.every((tag) => comic.tags.includes(tag));
+    // Add search filter if there's a search term
+    if (searchTerm.trim() !== "") {
+      query = query.or(
+        `title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`
+      );
+    }
 
-      return matchesSearch && matchesTags;
-    });
+    // Add tags filter if there are selected tags
+    if (selectedTags.length > 0) {
+      query = query.contains("tags", selectedTags);
+    }
 
-    // Sort the filtered results
-    results = sortComics(results, sortOrder);
-    setFilteredComics(results);
+    // Add sorting
+    query = query.order("release_date", { ascending: sortOrder === "oldest" });
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("Error:", error);
+      return;
+    }
+
+    setFilteredComics(data.map((comic) => [comic.id.toString(), comic]));
   };
 
   const toggleTag = (tag) => {

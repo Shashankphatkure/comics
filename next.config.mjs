@@ -1,9 +1,23 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: [
-      "scnlpebzvvirngvesquo.supabase.co", // Replace with your Supabase project domain
-      // ... any other domains you need
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "scnlpebzvvirngvesquo.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.pixabay.com",
+      },
+      {
+        protocol: "https",
+        hostname: "i.imgur.com",
+      },
     ],
   },
 };

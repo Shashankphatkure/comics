@@ -1,25 +1,52 @@
-import { comics } from "@/app/data/comics";
-import ComicViewer from "@/app/components/ComicViewer";
-import BannerAd from "@/app/components/BannerAd";
+import { supabase } from "../../lib/supabase";
+import ComicViewer from "../../components/ComicViewer";
 import Link from "next/link";
+import BannerAd from "../../components/BannerAd";
+
+async function getComic(id) {
+  const { data, error } = await supabase
+    .from("comics")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error("Error:", error);
+    return null;
+  }
+
+  return data;
+}
+
+async function getAdjacentComics(currentId) {
+  const { data, error } = await supabase
+    .from("comics")
+    .select("id, title")
+    .or(`id.eq.${currentId - 1},id.eq.${currentId + 1}`);
+
+  if (error) {
+    console.error("Error:", error);
+    return { prevIssue: null, nextIssue: null };
+  }
+
+  const prevIssue = data.find((comic) => comic.id === currentId - 1);
+  const nextIssue = data.find((comic) => comic.id === currentId + 1);
+
+  return { prevIssue, nextIssue };
+}
 
 export default async function IssuePage({ params }) {
-  // Convert params.id to string to ensure consistent type
-  const issueId = String(params.id);
-  const issue = comics[issueId];
-  const prevIssue = comics[Number(issueId) - 1];
-  const nextIssue = comics[Number(issueId) + 1];
+  const issueId = parseInt(params.id);
+  const issue = await getComic(issueId);
+  const { prevIssue, nextIssue } = await getAdjacentComics(issueId);
 
   if (!issue) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="retro-card p-8 text-center">
-          <h2 className="retro-title text-2xl mb-4">Issue Not Found</h2>
-          <p className="mb-6 text-[var(--color-text)]">
-            This issue doesn't exist yet!
-          </p>
+          <h1 className="text-2xl mb-4">Issue Not Found</h1>
           <Link href="/" className="retro-button">
-            Return Home
+            Back to Home
           </Link>
         </div>
       </div>
@@ -28,90 +55,100 @@ export default async function IssuePage({ params }) {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Title Section */}
+      <div className="retro-card p-8 mb-8">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="retro-title text-4xl mb-4">
+              {issue.title} <span className="text-2xl">#{issue.id}</span>
+            </h1>
+            <p className="text-[var(--color-text)]">{issue.description}</p>
+          </div>
+          <Link href="/" className="retro-button">
+            Back to Home
+          </Link>
+        </div>
+      </div>
+
+      {/* Main Content */}
       <div className="flex flex-col lg:flex-row gap-8">
         <main className="flex-1">
-          {/* Comic Viewer */}
-          <ComicViewer issue={issueId} pages={issue.pages} />
+          {/* Navigation */}
+          <div className="flex justify-between mb-8">
+            {prevIssue ? (
+              <Link href={`/issue/${prevIssue.id}`} className="retro-button">
+                ← Previous Issue
+              </Link>
+            ) : (
+              <div></div>
+            )}
+            {nextIssue ? (
+              <Link href={`/issue/${nextIssue.id}`} className="retro-button">
+                Next Issue →
+              </Link>
+            ) : (
+              <div></div>
+            )}
+          </div>
 
-          {/* Issue Info - Moved below Comic Viewer */}
-          <div className="retro-card p-6 my-8">
-            <h2 className="retro-title text-3xl mb-4">{issue.title}</h2>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {issue.tags.map((tag) => (
+          {/* Comic Viewer */}
+          <div className="retro-card p-4">
+            <ComicViewer pages={issue.pages} />
+          </div>
+
+          {/* Tags */}
+          <div className="mt-8">
+            <h2 className="text-xl mb-4">Tags</h2>
+            <div className="flex flex-wrap gap-2">
+              {issue.tags.map((tag, index) => (
                 <span
-                  key={tag}
-                  className="px-3 py-1 bg-[var(--color-primary)] text-[var(--color-text)] rounded-full text-sm"
+                  key={index}
+                  className="px-3 py-1 bg-[var(--color-primary)] text-white rounded-full text-sm"
                 >
                   {tag}
                 </span>
               ))}
             </div>
-            <p className="text-[var(--color-text)] mb-4">{issue.description}</p>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-[var(--color-text-secondary)]">
-                Released: {new Date(issue.releaseDate).toLocaleDateString()}
-              </span>
-              <span className="flex items-center gap-1 text-[var(--color-text)]">
-                <span className="text-[var(--color-primary)]">★</span>
-                {issue.rating}
-              </span>
-            </div>
-          </div>
-
-          {/* Issue Navigation */}
-          <div className="flex justify-between items-center mt-8">
-            {prevIssue ? (
-              <Link
-                href={`/issue/${Number(issueId) - 1}`}
-                className="retro-button"
-              >
-                ← Previous Issue
-              </Link>
-            ) : (
-              <div />
-            )}
-            {nextIssue ? (
-              <Link
-                href={`/issue/${Number(issueId) + 1}`}
-                className="retro-button"
-              >
-                Next Issue →
-              </Link>
-            ) : (
-              <div />
-            )}
           </div>
         </main>
 
+        {/* Right Sidebar */}
         <aside className="lg:w-80">
           <div className="sticky top-4 space-y-6">
-            {/* Ad Banner */}
+            {/* Coming Soon Section */}
             <div className="retro-card p-6">
               <h3 className="retro-title text-xl mb-4">Coming Soon</h3>
               <BannerAd />
             </div>
 
-            {/* Other Issues */}
+            {/* Quick Links */}
             <div className="retro-card p-6">
-              <h3 className="retro-title text-xl mb-4">More Issues</h3>
+              <h3 className="retro-title text-xl mb-4">Quick Links</h3>
               <div className="space-y-3">
-                {Object.entries(comics)
-                  .filter(([id]) => id !== issueId)
-                  .slice(0, 3)
-                  .map(([id, comic]) => (
-                    <Link
-                      key={id}
-                      href={`/issue/${id}`}
-                      className="block comic-panel p-3 hover:-translate-y-1 transition-transform"
-                    >
-                      <h4 className="font-bold text-[var(--color-primary)]">
-                        {comic.title}
-                      </h4>
-                      <p className="text-sm text-[var(--color-text)]">
-                        Issue #{id}
-                      </p>
-                    </Link>
-                  ))}
+                <Link
+                  href="/about"
+                  className="block retro-button w-full text-center text-[var(--color-text)]"
+                >
+                  About Us
+                </Link>
+                <Link
+                  href="/search"
+                  className="block retro-button w-full text-center text-[var(--color-text)]"
+                >
+                  Browse
+                </Link>
+                <Link
+                  href="/other"
+                  className="block retro-button w-full text-center text-[var(--color-text)]"
+                >
+                  Extras
+                </Link>
+                <a
+                  href="#"
+                  className="block retro-button w-full text-center text-[var(--color-text)]"
+                >
+                  Discord
+                </a>
               </div>
             </div>
           </div>
