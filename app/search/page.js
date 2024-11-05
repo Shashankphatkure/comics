@@ -1,9 +1,10 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
-import { comics, tags } from "../data/comics";
+import { supabase } from "../lib/supabase";
 import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { tags } from "../data/tags";
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -14,9 +15,23 @@ function SearchContent() {
 
   // Initialize with all comics when component mounts
   useEffect(() => {
-    const initialComics = Object.entries(comics);
-    sortComics(initialComics, sortOrder);
-    setFilteredComics(initialComics);
+    const fetchComics = async () => {
+      const { data, error } = await supabase
+        .from("comics")
+        .select("*")
+        .order("release_date", { ascending: false });
+
+      if (error) {
+        console.error("Error:", error);
+        return;
+      }
+
+      const comicsArray = data.map((comic) => [comic.id.toString(), comic]);
+      sortComics(comicsArray, sortOrder);
+      setFilteredComics(comicsArray);
+    };
+
+    fetchComics();
   }, []);
 
   // Filter and sort comics when search term, tags, or sort order change

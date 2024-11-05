@@ -1,63 +1,88 @@
 "use client";
-import { useState } from "react";
-import { comics as initialComics } from "../data/comics";
+import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 import Link from "next/link";
 import Image from "next/image";
 
 export default function Dashboard() {
-  const [comics, setComics] = useState(initialComics);
+  const [comics, setComics] = useState([]);
   const [editingComic, setEditingComic] = useState(null);
-  const [activeTab, setActiveTab] = useState("list"); // 'list' or 'form'
+  const [activeTab, setActiveTab] = useState("list");
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     thumbnail: "",
-    releaseDate: "",
+    release_date: "",
     tags: [],
-    pages: [""],
+    pages: [],
     rating: 5.0,
   });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        name === "pages" ? value.split(",").map((url) => url.trim()) : value,
-    }));
-  };
+  useEffect(() => {
+    fetchComics();
+  }, []);
 
-  const handleTagsChange = (e) => {
-    const { value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      tags: value.split(",").map((tag) => tag.trim()),
-    }));
-  };
+  const fetchComics = async () => {
+    const { data, error } = await supabase
+      .from("comics")
+      .select("*")
+      .order("release_date", { ascending: false });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (editingComic) {
-      setComics((prev) => ({
-        ...prev,
-        [editingComic]: { ...formData },
-      }));
-    } else {
-      const newId = Math.max(...Object.keys(comics).map(Number), 0) + 1;
-      setComics((prev) => ({
-        ...prev,
-        [newId]: { ...formData },
-      }));
+    if (error) {
+      console.error("Error fetching comics:", error);
+      return;
     }
+
+    setComics(data);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const comicData = {
+      ...formData,
+      tags: Array.isArray(formData.tags)
+        ? formData.tags
+        : formData.tags.split(",").map((t) => t.trim()),
+      pages: Array.isArray(formData.pages)
+        ? formData.pages
+        : formData.pages.split(",").map((p) => p.trim()),
+    };
+
+    if (editingComic) {
+      const { error } = await supabase
+        .from("comics")
+        .update(comicData)
+        .eq("id", editingComic);
+
+      if (error) {
+        console.error("Error updating comic:", error);
+        return;
+      }
+    } else {
+      const { error } = await supabase.from("comics").insert([comicData]);
+
+      if (error) {
+        console.error("Error creating comic:", error);
+        return;
+      }
+    }
+
+    fetchComics();
     resetForm();
     setActiveTab("list");
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (confirm("Are you sure you want to delete this comic?")) {
-      const newComics = { ...comics };
-      delete newComics[id];
-      setComics(newComics);
+      const { error } = await supabase.from("comics").delete().eq("id", id);
+
+      if (error) {
+        console.error("Error deleting comic:", error);
+        return;
+      }
+
+      fetchComics();
     }
   };
 
@@ -73,9 +98,9 @@ export default function Dashboard() {
       title: "",
       description: "",
       thumbnail: "",
-      releaseDate: "",
+      release_date: "",
       tags: [],
-      pages: [""],
+      pages: [],
       rating: 5.0,
     });
   };
@@ -110,22 +135,18 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="retro-card p-6">
           <h3 className="text-lg mb-2">Total Comics</h3>
-          <p className="text-3xl font-bold">{Object.keys(comics).length}</p>
+          <p className="text-3xl font-bold">{comics.length}</p>
         </div>
         <div className="retro-card p-6">
           <h3 className="text-lg mb-2">Latest Issue</h3>
-          <p className="text-3xl font-bold">
-            #{Math.max(...Object.keys(comics).map(Number))}
-          </p>
+          <p className="text-3xl font-bold">#{comics[comics.length - 1].id}</p>
         </div>
         <div className="retro-card p-6">
           <h3 className="text-lg mb-2">Average Rating</h3>
           <p className="text-3xl font-bold">
             {(
-              Object.values(comics).reduce(
-                (acc, comic) => acc + (comic.rating || 0),
-                0
-              ) / Object.keys(comics).length
+              comics.reduce((acc, comic) => acc + comic.rating, 0) /
+              comics.length
             ).toFixed(1)}
           </p>
         </div>
@@ -189,8 +210,8 @@ export default function Dashboard() {
                   <label className="block mb-2">Release Date</label>
                   <input
                     type="date"
-                    name="releaseDate"
-                    value={formData.releaseDate}
+                    name="release_date"
+                    value={formData.release_date}
                     onChange={handleInputChange}
                     className="w-full p-2 border rounded bg-[var(--color-background)] text-[var(--color-text)]"
                     required
@@ -285,8 +306,8 @@ export default function Dashboard() {
       ) : (
         /* Comics List */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Object.entries(comics).map(([id, comic]) => (
-            <div key={id} className="retro-card p-4">
+          {comics.map((comic) => (
+            <div key={comic.id} className="retro-card p-4">
               <div className="relative aspect-square mb-4">
                 <Image
                   src={comic.thumbnail || "/placeholder-comic.jpg"}
@@ -296,7 +317,7 @@ export default function Dashboard() {
                 />
               </div>
               <h3 className="text-xl font-bold mb-2">{comic.title}</h3>
-              <p className="text-sm mb-2">Issue #{id}</p>
+              <p className="text-sm mb-2">Issue #{comic.id}</p>
               <p className="text-sm mb-4 line-clamp-2">{comic.description}</p>
               <div className="flex flex-wrap gap-2 mb-4">
                 {comic.tags.map((tag, index) => (
@@ -310,13 +331,13 @@ export default function Dashboard() {
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => handleEdit(id)}
+                  onClick={() => handleEdit(comic.id)}
                   className="retro-button text-sm"
                 >
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(id)}
+                  onClick={() => handleDelete(comic.id)}
                   className="retro-button text-sm bg-red-500 hover:bg-red-600"
                 >
                   Delete

@@ -1,10 +1,26 @@
-import { comics } from "./data/comics";
+import { supabase } from "./lib/supabase";
 import BannerAd from "./components/BannerAd";
 import Image from "next/image";
 import Link from "next/link";
 import FeaturedPanel from "./components/FeaturedPanel";
 
-export default function Home() {
+async function getComics() {
+  const { data, error } = await supabase
+    .from("comics")
+    .select("*")
+    .order("release_date", { ascending: false });
+
+  if (error) {
+    console.error("Error:", error);
+    return [];
+  }
+
+  return data;
+}
+
+export default async function Home() {
+  const comics = await getComics();
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Hero Section */}
@@ -34,8 +50,8 @@ export default function Home() {
               Latest Issues
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
-              {Object.entries(comics).map(([id, issue]) => (
-                <Link href={`/issue/${id}`} key={id}>
+              {comics.map((issue) => (
+                <Link href={`/issue/${issue.id}`} key={issue.id}>
                   <div className="retro-card group cursor-pointer h-full">
                     <div className="relative aspect-square overflow-hidden">
                       <Image
@@ -50,7 +66,7 @@ export default function Home() {
                           {issue.title}
                         </h3>
                         <span className="text-white/80 text-sm">
-                          Issue #{id}
+                          Issue #{issue.id}
                         </span>
                       </div>
                     </div>
