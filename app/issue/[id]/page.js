@@ -54,27 +54,12 @@ export default async function IssuePage({ params }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Title Section */}
-      <div className="retro-card p-8 mb-8">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="retro-title text-4xl mb-4">
-              {issue.title} <span className="text-2xl">#{issue.id}</span>
-            </h1>
-            <p className="text-[var(--color-text)]">{issue.description}</p>
-          </div>
-          <Link href="/" className="retro-button">
-            Back to Home
-          </Link>
-        </div>
-      </div>
-
+    <div className="container mx-auto px-4 ">
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row gap-8">
-        <main className="flex-1">
+        <main className="flex-1 pt-4">
           {/* Navigation */}
-          <div className="flex justify-between mb-8">
+          <div className="flex justify-between mb-4">
             {prevIssue ? (
               <Link href={`/issue/${prevIssue.id}`} className="retro-button">
                 ← Previous Issue
@@ -96,6 +81,21 @@ export default async function IssuePage({ params }) {
             <ComicViewer pages={issue.pages} />
           </div>
 
+          {/* Title Section */}
+          <div className="retro-card p-8 my-8">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="retro-title text-4xl mb-4">
+                  {issue.title} <span className="text-2xl">#{issue.id}</span>
+                </h1>
+                <p className="text-[var(--color-text)]">{issue.description}</p>
+              </div>
+              <Link href="/" className="retro-button">
+                Back to Home
+              </Link>
+            </div>
+          </div>
+
           {/* Tags */}
           <div className="mt-8">
             <h2 className="text-xl mb-4">Tags</h2>
@@ -114,7 +114,7 @@ export default async function IssuePage({ params }) {
 
         {/* Right Sidebar */}
         <aside className="lg:w-80">
-          <div className="sticky top-4 space-y-6">
+          <div className="sticky top-4 space-y-6 pt-8">
             {/* Coming Soon Section */}
             <div className="retro-card p-6">
               <h3 className="retro-title text-xl mb-4">Coming Soon</h3>
