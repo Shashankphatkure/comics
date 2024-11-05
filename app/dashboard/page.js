@@ -18,6 +18,9 @@ export default function Dashboard() {
     rating: 5.0,
   });
 
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
   useEffect(() => {
     fetchComics();
   }, []);
@@ -103,6 +106,96 @@ export default function Dashboard() {
       pages: [],
       rating: 5.0,
     });
+  };
+
+  const uploadThumbnail = async (file) => {
+    try {
+      setUploading(true);
+
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `thumbnails/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("comics")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("comics").getPublicUrl(filePath);
+
+      setFormData((prev) => ({
+        ...prev,
+        thumbnail: publicUrl,
+      }));
+    } catch (error) {
+      console.error("Error uploading thumbnail:", error);
+      alert("Error uploading thumbnail!");
+    } finally {
+      setUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
+  const uploadPages = async (files) => {
+    try {
+      setUploading(true);
+      const uploadPromises = [];
+      const uploadedUrls = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileExt = file.name.split(".").pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `pages/${fileName}`;
+
+        const uploadPromise = supabase.storage
+          .from("comics")
+          .upload(filePath, file, {
+            cacheControl: "3600",
+            upsert: false,
+          })
+          .then(({ error }) => {
+            if (error) throw error;
+            const {
+              data: { publicUrl },
+            } = supabase.storage.from("comics").getPublicUrl(filePath);
+            uploadedUrls.push(publicUrl);
+            setUploadProgress(((i + 1) / files.length) * 100);
+          });
+
+        uploadPromises.push(uploadPromise);
+      }
+
+      await Promise.all(uploadPromises);
+
+      setFormData((prev) => ({
+        ...prev,
+        pages: uploadedUrls,
+      }));
+    } catch (error) {
+      console.error("Error uploading pages:", error);
+      alert("Error uploading pages!");
+    } finally {
+      setUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
+  const handleFileChange = async (e, type) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    if (type === "thumbnail") {
+      await uploadThumbnail(files[0]);
+    } else if (type === "pages") {
+      await uploadPages(files);
+    }
   };
 
   return (
@@ -192,18 +285,59 @@ export default function Dashboard() {
                 />
               </div>
               <div>
-                <label className="block mb-2">Thumbnail URL</label>
+                <label className="block mb-2">Thumbnail</label>
+                <div className="flex gap-4 items-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, "thumbnail")}
+                    className="w-full p-2 border rounded bg-[var(--color-background)] text-[var(--color-text)]"
+                  />
+                  {formData.thumbnail && (
+                    <div className="w-16 h-16 relative">
+                      <Image
+                        src={formData.thumbnail}
+                        alt="Thumbnail preview"
+                        fill
+                        className="object-cover rounded"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div>
+                <label className="block mb-2">Comic Pages</label>
                 <input
-                  type="url"
-                  name="thumbnail"
-                  value={formData.thumbnail}
-                  onChange={handleInputChange}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => handleFileChange(e, "pages")}
                   className="w-full p-2 border rounded bg-[var(--color-background)] text-[var(--color-text)]"
-                  required
                 />
-                <p className="text-sm text-[var(--color-text)]/70 mt-1">
-                  Recommended size: 800x800px square image
-                </p>
+                {uploading && (
+                  <div className="mt-2">
+                    <div className="h-2 bg-gray-200 rounded">
+                      <div
+                        className="h-full bg-[var(--color-primary)] rounded"
+                        style={{ width: `${uploadProgress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+                {formData.pages.length > 0 && (
+                  <div className="mt-2 grid grid-cols-4 gap-2">
+                    {formData.pages.map((url, index) => (
+                      <div key={index} className="relative aspect-square">
+                        <Image
+                          src={url}
+                          alt={`Page ${index + 1}`}
+                          fill
+                          className="object-cover rounded"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
