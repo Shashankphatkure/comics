@@ -199,6 +199,30 @@ export default function Dashboard() {
     }
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        name === "pages"
+          ? value.split(",").map((p) => p.trim())
+          : name === "rating"
+          ? parseFloat(value)
+          : value,
+    }));
+  };
+
+  const handleTagsChange = (e) => {
+    const tagsString = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      tags: tagsString
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag),
+    }));
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
