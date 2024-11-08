@@ -118,14 +118,15 @@ export default function Dashboard() {
       setUploading(true);
 
       const fileExt = file.name.split(".").pop();
-      const fileName = `${Math.random()}.${fileExt}`;
+      const fileName = `${Math.random()}-${Date.now()}.${fileExt}`;
       const filePath = `thumbnails/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError, data } = await supabase.storage
         .from("comics")
         .upload(filePath, file, {
           cacheControl: "3600",
           upsert: false,
+          contentType: file.type,
         });
 
       if (uploadError) throw uploadError;
@@ -139,8 +140,8 @@ export default function Dashboard() {
         thumbnail: publicUrl,
       }));
     } catch (error) {
-      console.error("Error uploading thumbnail:", error);
-      alert("Error uploading thumbnail!");
+      console.error("Error uploading thumbnail:", error.message);
+      alert(`Error uploading thumbnail: ${error.message}`);
     } finally {
       setUploading(false);
       setUploadProgress(0);
@@ -150,42 +151,39 @@ export default function Dashboard() {
   const uploadPages = async (files) => {
     try {
       setUploading(true);
-      const uploadPromises = [];
       const uploadedUrls = [];
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const fileExt = file.name.split(".").pop();
-        const fileName = `${Math.random()}.${fileExt}`;
+        const fileName = `${Math.random()}-${Date.now()}.${fileExt}`;
         const filePath = `pages/${fileName}`;
 
-        const uploadPromise = supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from("comics")
           .upload(filePath, file, {
             cacheControl: "3600",
             upsert: false,
-          })
-          .then(({ error }) => {
-            if (error) throw error;
-            const {
-              data: { publicUrl },
-            } = supabase.storage.from("comics").getPublicUrl(filePath);
-            uploadedUrls.push(publicUrl);
-            setUploadProgress(((i + 1) / files.length) * 100);
+            contentType: file.type,
           });
 
-        uploadPromises.push(uploadPromise);
-      }
+        if (uploadError) throw uploadError;
 
-      await Promise.all(uploadPromises);
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("comics").getPublicUrl(filePath);
+
+        uploadedUrls.push(publicUrl);
+        setUploadProgress(((i + 1) / files.length) * 100);
+      }
 
       setFormData((prev) => ({
         ...prev,
-        pages: uploadedUrls,
+        pages: [...prev.pages, ...uploadedUrls],
       }));
     } catch (error) {
-      console.error("Error uploading pages:", error);
-      alert("Error uploading pages!");
+      console.error("Error uploading pages:", error.message);
+      alert(`Error uploading pages: ${error.message}`);
     } finally {
       setUploading(false);
       setUploadProgress(0);
