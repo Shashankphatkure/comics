@@ -96,8 +96,22 @@ export default function Dashboard() {
 
   const handleEdit = (id) => {
     setEditingComic(id);
-    setFormData(comics[id]);
-    setActiveTab("form");
+    const comicToEdit = comics.find((comic) => comic.id === id);
+    if (comicToEdit) {
+      setFormData({
+        title: comicToEdit.title,
+        description: comicToEdit.description,
+        thumbnail: comicToEdit.thumbnail,
+        release_date: comicToEdit.release_date,
+        tags: comicToEdit.tags || [],
+        pages: comicToEdit.pages || [],
+        rating: comicToEdit.rating || 5.0,
+      });
+      setActiveTab("form");
+    } else {
+      console.error("Comic not found");
+      alert("Error: Comic not found");
+    }
   };
 
   const resetForm = () => {
