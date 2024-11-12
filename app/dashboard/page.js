@@ -101,10 +101,10 @@ export default function Dashboard() {
       setFormData({
         title: comicToEdit.title,
         description: comicToEdit.description,
-        thumbnail: comicToEdit.thumbnail,
+        thumbnail: comicToEdit.thumbnail || "",
         release_date: comicToEdit.release_date,
         tags: comicToEdit.tags || [],
-        pages: comicToEdit.pages || [],
+        pages: Array.isArray(comicToEdit.pages) ? comicToEdit.pages : [],
         rating: comicToEdit.rating || 5.0,
       });
       setActiveTab("form");
@@ -165,7 +165,7 @@ export default function Dashboard() {
   const uploadPages = async (files) => {
     try {
       setUploading(true);
-      const uploadedUrls = [];
+      const uploadedPages = [];
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -187,13 +187,13 @@ export default function Dashboard() {
           data: { publicUrl },
         } = supabase.storage.from("comics").getPublicUrl(filePath);
 
-        uploadedUrls.push(publicUrl);
+        uploadedPages.push(publicUrl);
         setUploadProgress(((i + 1) / files.length) * 100);
       }
 
       setFormData((prev) => ({
         ...prev,
-        pages: [...prev.pages, ...uploadedUrls],
+        pages: [...prev.pages, ...uploadedPages],
       }));
     } catch (error) {
       console.error("Error uploading pages:", error.message);
@@ -202,6 +202,22 @@ export default function Dashboard() {
       setUploading(false);
       setUploadProgress(0);
     }
+  };
+
+  const removePage = (indexToRemove) => {
+    setFormData((prev) => ({
+      ...prev,
+      pages: prev.pages.filter((_, index) => index !== indexToRemove),
+    }));
+  };
+
+  const reorderPages = (dragIndex, dropIndex) => {
+    setFormData((prev) => {
+      const newPages = [...prev.pages];
+      const [draggedPage] = newPages.splice(dragIndex, 1);
+      newPages.splice(dropIndex, 0, draggedPage);
+      return { ...prev, pages: newPages };
+    });
   };
 
   const handleFileChange = async (e, type) => {
@@ -416,17 +432,36 @@ export default function Dashboard() {
                   </div>
                 )}
                 {formData.pages.length > 0 && (
-                  <div className="mt-2 grid grid-cols-4 gap-2">
-                    {formData.pages.map((url, index) => (
-                      <div key={index} className="relative aspect-square">
-                        <Image
-                          src={url}
-                          alt={`Page ${index + 1}`}
-                          fill
-                          className="object-cover rounded"
-                        />
-                      </div>
-                    ))}
+                  <div className="mt-4">
+                    <h4 className="mb-2">Uploaded Pages</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {formData.pages.map((pageUrl, index) => (
+                        <div key={index} className="relative group">
+                          <div className="relative aspect-square">
+                            {pageUrl && (
+                              <Image
+                                src={pageUrl}
+                                alt={`Page ${index + 1}`}
+                                fill
+                                className="object-cover rounded"
+                              />
+                            )}
+                            <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded">
+                              Page {index + 1}
+                            </div>
+                          </div>
+                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              type="button"
+                              onClick={() => removePage(index)}
+                              className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -457,29 +492,46 @@ export default function Dashboard() {
                 </div>
               </div>
               <div>
-                <label className="block mb-2">Tags (comma-separated)</label>
+                <label className="block mb-2">Tags</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {formData.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="px-2 py-1 bg-[var(--color-primary)] text-white rounded text-xs flex items-center gap-2"
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            tags: prev.tags.filter((_, i) => i !== index),
+                          }));
+                        }}
+                        className="hover:text-red-300"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
                 <input
                   type="text"
-                  name="tags"
-                  value={
-                    Array.isArray(formData.tags) ? formData.tags.join(", ") : ""
-                  }
-                  onChange={handleTagsChange}
-                  placeholder="action, adventure, fantasy"
+                  placeholder="Type a tag and press Enter"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      const newTag = e.target.value.trim();
+                      if (newTag && !formData.tags.includes(newTag)) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          tags: [...prev.tags, newTag],
+                        }));
+                        e.target.value = "";
+                      }
+                    }
+                  }}
                   className="w-full p-2 border rounded bg-[var(--color-background)] text-[var(--color-text)]"
-                />
-              </div>
-              <div>
-                <label className="block mb-2">
-                  Pages URLs (comma-separated)
-                </label>
-                <textarea
-                  name="pages"
-                  value={formData.pages.join(", ")}
-                  onChange={handleInputChange}
-                  rows={4}
-                  className="w-full p-2 border rounded bg-[var(--color-background)] text-[var(--color-text)]"
-                  required
                 />
               </div>
               <div className="flex gap-4">
