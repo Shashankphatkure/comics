@@ -21,6 +21,13 @@ async function getComics() {
 
 export const revalidate = 0;
 
+function getIssueNumber(comics, currentId) {
+  const sortedComics = [...comics].sort(
+    (a, b) => new Date(a.release_date) - new Date(b.release_date)
+  );
+  return sortedComics.findIndex((comic) => comic.id === currentId) + 1;
+}
+
 export default async function Home() {
   const comics = await getComics();
 
@@ -69,7 +76,7 @@ export default async function Home() {
                           {issue.title}
                         </h3>
                         <span className="text-white/80 text-sm">
-                          Issue #{issue.id}
+                          Issue #{getIssueNumber(comics, issue.id)}
                         </span>
                       </div>
                     </div>

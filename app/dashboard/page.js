@@ -26,6 +26,9 @@ export default function Dashboard() {
   const [filterTag, setFilterTag] = useState("");
   const [sortBy, setSortBy] = useState("newest"); // "newest", "oldest", "rating"
 
+  const [draggedIndex, setDraggedIndex] = useState(null);
+  const [draggedOverIndex, setDraggedOverIndex] = useState(null);
+
   useEffect(() => {
     fetchComics().finally(() => setLoading(false));
   }, []);
@@ -287,6 +290,75 @@ export default function Dashboard() {
     return Array.from(tags);
   };
 
+  const handleDragStart = (e, index) => {
+    setDraggedIndex(index);
+    e.dataTransfer.setData("text/plain", index);
+    e.target.classList.add("dragging");
+
+    // Create a drag image (optional)
+    const dragImage = e.target.cloneNode(true);
+    dragImage.style.opacity = "0.5";
+    dragImage.style.position = "absolute";
+    dragImage.style.top = "-1000px";
+    document.body.appendChild(dragImage);
+    e.dataTransfer.setDragImage(dragImage, 0, 0);
+    setTimeout(() => document.body.removeChild(dragImage), 0);
+  };
+
+  const handleDragEnd = (e) => {
+    e.target.classList.remove("dragging");
+    setDraggedIndex(null);
+    setDraggedOverIndex(null);
+    document.querySelectorAll(".drag-over").forEach((el) => {
+      el.classList.remove("drag-over");
+    });
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    setDraggedOverIndex(index);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.target.closest(".page-item").classList.remove("drag-over");
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.target.closest(".page-item").classList.add("drag-over");
+  };
+
+  const handleDrop = (e, dropIndex) => {
+    e.preventDefault();
+    const dragIndex = parseInt(e.dataTransfer.getData("text/plain"));
+
+    if (dragIndex !== dropIndex) {
+      const newPages = [...formData.pages];
+      const [draggedPage] = newPages.splice(dragIndex, 1);
+      newPages.splice(dropIndex, 0, draggedPage);
+
+      setFormData((prev) => ({
+        ...prev,
+        pages: newPages,
+      }));
+    }
+
+    setDraggedIndex(null);
+    setDraggedOverIndex(null);
+    e.target.closest(".page-item").classList.remove("drag-over");
+  };
+
+  const getIssueNumber = (comics, currentId) => {
+    // Sort comics by release date, oldest first
+    const sortedComics = [...comics].sort(
+      (a, b) => new Date(a.release_date) - new Date(b.release_date)
+    );
+    // Find the index of current comic and add 1 for human-readable issue number
+    // Oldest comic will be index 0 + 1 = #1
+    return sortedComics.findIndex((comic) => comic.id === currentId) + 1;
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -332,7 +404,16 @@ export default function Dashboard() {
         <div className="retro-card p-6">
           <h3 className="text-lg mb-2">Latest Issue</h3>
           <p className="text-3xl font-bold">
-            #{comics.length > 0 ? comics[comics.length - 1].id : 0}
+            #
+            {comics.length > 0
+              ? getIssueNumber(
+                  comics,
+                  comics.sort(
+                    (a, b) =>
+                      new Date(b.release_date) - new Date(a.release_date)
+                  )[0].id
+                )
+              : 0}
           </p>
         </div>
         <div className="retro-card p-6">
@@ -433,30 +514,63 @@ export default function Dashboard() {
                 )}
                 {formData.pages.length > 0 && (
                   <div className="mt-4">
-                    <h4 className="mb-2">Uploaded Pages</h4>
+                    <h4 className="mb-2">Uploaded Pages (drag to reorder)</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {formData.pages.map((pageUrl, index) => (
-                        <div key={index} className="relative group">
-                          <div className="relative aspect-square">
+                        <div
+                          key={index}
+                          className={`
+                            page-item relative group cursor-move transform transition-all duration-200
+                            ${
+                              draggedIndex === index
+                                ? "scale-105 opacity-50"
+                                : ""
+                            }
+                            ${draggedOverIndex === index ? "scale-105" : ""}
+                          `}
+                          draggable="true"
+                          onDragStart={(e) => handleDragStart(e, index)}
+                          onDragEnd={handleDragEnd}
+                          onDragOver={(e) => handleDragOver(e, index)}
+                          onDragEnter={handleDragEnter}
+                          onDragLeave={handleDragLeave}
+                          onDrop={(e) => handleDrop(e, index)}
+                        >
+                          <div className="relative aspect-square rounded-lg overflow-hidden shadow-lg transition-transform duration-200">
                             {pageUrl && (
                               <Image
                                 src={pageUrl}
                                 alt={`Page ${index + 1}`}
                                 fill
-                                className="object-cover rounded"
+                                className="object-cover rounded-lg"
                               />
                             )}
-                            <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded">
-                              Page {index + 1}
+                            <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent">
+                              <div className="p-2 text-white text-sm font-medium">
+                                Page {index + 1}
+                              </div>
                             </div>
+                            <div className="absolute inset-0 border-2 border-dashed border-transparent transition-colors duration-200 rounded-lg drag-outline"></div>
                           </div>
-                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             <button
                               type="button"
                               onClick={() => removePage(index)}
-                              className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
+                              className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors duration-200 shadow-lg"
                             >
-                              Remove
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              </svg>
                             </button>
                           </div>
                         </div>
@@ -642,7 +756,9 @@ export default function Dashboard() {
                   />
                 </div>
                 <h3 className="text-xl font-bold mb-2">{comic.title}</h3>
-                <p className="text-sm mb-2">Issue #{comic.id}</p>
+                <p className="text-sm mb-2">
+                  Issue #{getIssueNumber(comics, comic.id)}
+                </p>
                 <p className="text-sm mb-4 line-clamp-2">{comic.description}</p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {comic.tags.map((tag, index) => (
