@@ -3,6 +3,24 @@ import ComicViewer from "../../components/ComicViewer";
 import Link from "next/link";
 import BannerAd from "../../components/BannerAd";
 
+async function getAllComics() {
+  const { data, error } = await supabase
+    .from("comics")
+    .select("id, release_date")
+    .order("release_date", { ascending: true });
+
+  if (error) {
+    console.error("Error:", error);
+    return [];
+  }
+
+  return data;
+}
+
+function getIssueNumber(comics, currentId) {
+  return comics.findIndex((comic) => comic.id === currentId) + 1;
+}
+
 async function getComic(id) {
   const { data, error } = await supabase
     .from("comics")
@@ -19,18 +37,34 @@ async function getComic(id) {
 }
 
 async function getAdjacentComics(currentId) {
+  const { data: currentComic } = await supabase
+    .from("comics")
+    .select("release_date")
+    .eq("id", currentId)
+    .single();
+
+  if (!currentComic) return { prevIssue: null, nextIssue: null };
+
   const { data, error } = await supabase
     .from("comics")
-    .select("id, title")
-    .or(`id.eq.${currentId - 1},id.eq.${currentId + 1}`);
+    .select("id, title, release_date")
+    .or(
+      `release_date.lt.${currentComic.release_date},release_date.gt.${currentComic.release_date}`
+    )
+    .order("release_date", { ascending: true });
 
-  if (error) {
+  if (error || !data) {
     console.error("Error:", error);
     return { prevIssue: null, nextIssue: null };
   }
 
-  const prevIssue = data.find((comic) => comic.id === currentId - 1);
-  const nextIssue = data.find((comic) => comic.id === currentId + 1);
+  const currentIndex = data.findIndex(
+    (comic) =>
+      new Date(comic.release_date) > new Date(currentComic.release_date)
+  );
+
+  const prevIssue = currentIndex > 0 ? data[currentIndex - 1] : null;
+  const nextIssue = currentIndex !== -1 ? data[currentIndex] : null;
 
   return { prevIssue, nextIssue };
 }
@@ -39,6 +73,7 @@ export default async function IssuePage({ params }) {
   const issueId = parseInt(params.id);
   const issue = await getComic(issueId);
   const { prevIssue, nextIssue } = await getAdjacentComics(issueId);
+  const allComics = await getAllComics();
 
   if (!issue) {
     return (
@@ -52,6 +87,8 @@ export default async function IssuePage({ params }) {
       </div>
     );
   }
+
+  const issueNumber = getIssueNumber(allComics, issueId);
 
   return (
     <div className="container mx-auto px-4 ">
@@ -86,7 +123,7 @@ export default async function IssuePage({ params }) {
             <div className="flex justify-between items-center">
               <div>
                 <h1 className="retro-title text-4xl mb-4">
-                  {issue.title} <span className="text-2xl">#{issue.id}</span>
+                  {issue.title} <span className="text-2xl">#{issueNumber}</span>
                 </h1>
                 <p className="text-[var(--color-text)]">{issue.description}</p>
               </div>
