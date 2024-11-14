@@ -8,7 +8,8 @@ async function getComics() {
   const { data, error } = await supabase
     .from("comics")
     .select("*")
-    .order("release_date", { ascending: false });
+    .order("release_date", { ascending: false })
+    .returns();
 
   if (error) {
     console.error("Error:", error);
@@ -17,6 +18,8 @@ async function getComics() {
 
   return data;
 }
+
+export const revalidate = 0;
 
 export default async function Home() {
   const comics = await getComics();
