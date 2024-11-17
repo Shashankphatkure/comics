@@ -438,7 +438,9 @@ export default function Dashboard() {
         <div className="retro-card p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl">
-              {editingComic ? `Edit Comic #${editingComic}` : "Add New Comic"}
+              {editingComic
+                ? `Edit Comic #${getIssueNumber(comics, editingComic)}`
+                : "Add New Comic"}
             </h2>
             <button
               onClick={() => setActiveTab("list")}
