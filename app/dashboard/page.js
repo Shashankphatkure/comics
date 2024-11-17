@@ -350,12 +350,9 @@ export default function Dashboard() {
   };
 
   const getIssueNumber = (comics, currentId) => {
-    // Sort comics by release date, oldest first
-    const sortedComics = [...comics].sort(
-      (a, b) => new Date(a.release_date) - new Date(b.release_date)
-    );
+    // Sort comics by ID (lower ID = earlier issue)
+    const sortedComics = [...comics].sort((a, b) => a.id - b.id);
     // Find the index of current comic and add 1 for human-readable issue number
-    // Oldest comic will be index 0 + 1 = #1
     return sortedComics.findIndex((comic) => comic.id === currentId) + 1;
   };
 
@@ -773,6 +770,12 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <div className="flex gap-2">
+                  <Link
+                    href={`/issue/${comic.id}`}
+                    className="retro-button text-sm"
+                  >
+                    View
+                  </Link>
                   <button
                     onClick={() => handleEdit(comic.id)}
                     className="retro-button text-sm"

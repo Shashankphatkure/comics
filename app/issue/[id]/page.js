@@ -6,8 +6,8 @@ import BannerAd from "../../components/BannerAd";
 async function getAllComics() {
   const { data, error } = await supabase
     .from("comics")
-    .select("id, release_date")
-    .order("release_date", { ascending: true });
+    .select("id")
+    .order("id", { ascending: true });
 
   if (error) {
     console.error("Error:", error);
@@ -18,7 +18,8 @@ async function getAllComics() {
 }
 
 function getIssueNumber(comics, currentId) {
-  return comics.findIndex((comic) => comic.id === currentId) + 1;
+  const sortedComics = [...comics].sort((a, b) => a.id - b.id);
+  return sortedComics.findIndex((comic) => comic.id === currentId) + 1;
 }
 
 async function getComic(id) {
@@ -37,31 +38,18 @@ async function getComic(id) {
 }
 
 async function getAdjacentComics(currentId) {
-  const { data: currentComic } = await supabase
-    .from("comics")
-    .select("release_date")
-    .eq("id", currentId)
-    .single();
-
-  if (!currentComic) return { prevIssue: null, nextIssue: null };
-
   const { data, error } = await supabase
     .from("comics")
-    .select("id, title, release_date")
-    .or(
-      `release_date.lt.${currentComic.release_date},release_date.gt.${currentComic.release_date}`
-    )
-    .order("release_date", { ascending: true });
+    .select("id, title")
+    .or(`id.lt.${currentId},id.gt.${currentId}`)
+    .order("id", { ascending: true });
 
   if (error || !data) {
     console.error("Error:", error);
     return { prevIssue: null, nextIssue: null };
   }
 
-  const currentIndex = data.findIndex(
-    (comic) =>
-      new Date(comic.release_date) > new Date(currentComic.release_date)
-  );
+  const currentIndex = data.findIndex((comic) => comic.id > currentId);
 
   const prevIssue = currentIndex > 0 ? data[currentIndex - 1] : null;
   const nextIssue = currentIndex !== -1 ? data[currentIndex] : null;

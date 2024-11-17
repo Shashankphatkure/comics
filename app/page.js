@@ -8,7 +8,7 @@ async function getComics() {
   const { data, error } = await supabase
     .from("comics")
     .select("*")
-    .order("release_date", { ascending: false })
+    .order("id", { ascending: false })
     .returns();
 
   if (error) {
@@ -22,9 +22,7 @@ async function getComics() {
 export const revalidate = 0;
 
 function getIssueNumber(comics, currentId) {
-  const sortedComics = [...comics].sort(
-    (a, b) => new Date(a.release_date) - new Date(b.release_date)
-  );
+  const sortedComics = [...comics].sort((a, b) => a.id - b.id);
   return sortedComics.findIndex((comic) => comic.id === currentId) + 1;
 }
 
