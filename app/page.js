@@ -30,7 +30,7 @@ function getIssueNumber(comics, currentId) {
 
 export default async function Home() {
   const comics = await getComics();
-  const latestIssueId = comics.length > 0 ? comics[0].id : 1;
+  const latestIssueId = comics.length > 0 ? comics[0].id : null;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -43,49 +43,65 @@ export default async function Home() {
               A retro-styled webcomic exploring modern society through a unique
               lens
             </p>
-            <Link href={`/issue/${latestIssueId}`}>
-              <button className="retro-button">Start Reading</button>
-            </Link>
+            {latestIssueId && (
+              <Link href={`/issue/${latestIssueId}`}>
+                <button className="retro-button">Start Reading</button>
+              </Link>
+            )}
           </div>
-          <div className="w-full md:w-1/2 aspect-video relative">
-            <FeaturedPanel latestIssueId={latestIssueId} />
-          </div>
+          {latestIssueId && (
+            <div className="w-full md:w-1/2 aspect-video relative">
+              {/* @ts-expect-error Async Server Component */}
+              <FeaturedPanel latestIssueId={latestIssueId} />
+            </div>
+          )}
         </div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
         <main className="flex-1">
           {/* Latest Issues Section */}
-          <section className="mb-12">
-            <h2 className="retro-title text-4xl mb-8 text-center">
-              Latest Issues
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
-              {comics.map((issue) => (
-                <Link href={`/issue/${issue.id}`} key={issue.id}>
-                  <div className="retro-card group cursor-pointer h-full">
-                    <div className="relative aspect-square overflow-hidden">
-                      <Image
-                        src={issue.thumbnail || "/placeholder-comic.jpg"}
-                        alt={issue.title}
-                        fill
-                        className="object-cover transition-transform group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80" />
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <h3 className="text-white font-bold text-xl mb-1">
-                          {issue.title}
-                        </h3>
-                        <span className="text-white/80 text-sm">
-                          Issue #{getIssueNumber(comics, issue.id)}
-                        </span>
+          {comics.length > 0 ? (
+            <section className="mb-12">
+              <h2 className="retro-title text-4xl mb-8 text-center">
+                Latest Issues
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
+                {comics.map((issue) => (
+                  <Link href={`/issue/${issue.id}`} key={issue.id}>
+                    <div className="retro-card group cursor-pointer h-full">
+                      <div className="relative aspect-square overflow-hidden">
+                        <Image
+                          src={issue.thumbnail || "/placeholder-comic.jpg"}
+                          alt={issue.title}
+                          fill
+                          className="object-cover transition-transform group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80" />
+                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                          <h3 className="text-white font-bold text-xl mb-1">
+                            {issue.title}
+                          </h3>
+                          <span className="text-white/80 text-sm">
+                            Issue #{getIssueNumber(comics, issue.id)}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ) : (
+            <section className="mb-12">
+              <div className="retro-card p-6 text-center">
+                <h2 className="text-2xl mb-4">No Issues Available</h2>
+                <p className="text-[var(--color-text-secondary)]">
+                  Check back soon for new comic releases!
+                </p>
+              </div>
+            </section>
+          )}
 
           {/* Features Section */}
           <section className="grid md:grid-cols-2 gap-8 mb-12">

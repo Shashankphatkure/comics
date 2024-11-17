@@ -10,6 +10,8 @@ export default async function FeaturedPanel({ latestIssueId }) {
     .eq("id", latestIssueId)
     .single();
 
+  if (!latestIssue) return null; // Don't render anything if no issue exists
+
   return (
     <div className="relative aspect-[16/9] w-full overflow-hidden comic-panel">
       <Image
