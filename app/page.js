@@ -30,6 +30,7 @@ function getIssueNumber(comics, currentId) {
 
 export default async function Home() {
   const comics = await getComics();
+  const latestIssueId = comics.length > 0 ? comics[0].id : 1;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -42,12 +43,12 @@ export default async function Home() {
               A retro-styled webcomic exploring modern society through a unique
               lens
             </p>
-            <Link href="/issue/1">
+            <Link href={`/issue/${latestIssueId}`}>
               <button className="retro-button">Start Reading</button>
             </Link>
           </div>
           <div className="w-full md:w-1/2 aspect-video relative">
-            <FeaturedPanel />
+            <FeaturedPanel latestIssueId={latestIssueId} />
           </div>
         </div>
       </div>

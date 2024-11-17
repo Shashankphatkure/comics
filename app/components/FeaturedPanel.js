@@ -1,15 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
-import { comics, featuredIssue } from "../data/comics";
+import { supabase } from "../lib/supabase";
 
-export default function FeaturedPanel() {
-  const featured = comics[featuredIssue];
+export default async function FeaturedPanel({ latestIssueId }) {
+  // Fetch the latest issue data
+  const { data: latestIssue } = await supabase
+    .from("comics")
+    .select("*")
+    .eq("id", latestIssueId)
+    .single();
 
   return (
     <div className="relative aspect-[16/9] w-full overflow-hidden comic-panel">
       <Image
-        src={featured.pages[0]} // Using the first page as featured image
-        alt={featured.title}
+        src={latestIssue.thumbnail || "/placeholder-comic.jpg"}
+        alt={latestIssue.title}
         fill
         className="object-cover"
         priority
@@ -17,12 +22,12 @@ export default function FeaturedPanel() {
       <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-secondary)] to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-6">
         <h3 className="text-[var(--color-text)] text-2xl font-bold mb-2">
-          {featured.title}
+          {latestIssue.title}
         </h3>
         <p className="text-[var(--color-text-secondary)] mb-4">
-          {featured.description}
+          {latestIssue.description}
         </p>
-        <Link href={`/issue/${featuredIssue}`}>
+        <Link href={`/issue/${latestIssueId}`}>
           <button className="retro-button">Read Latest Issue</button>
         </Link>
       </div>
